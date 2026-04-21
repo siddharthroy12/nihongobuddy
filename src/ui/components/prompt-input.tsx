@@ -1,23 +1,25 @@
 import React, { useState } from "react";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/ui/components/ui/field";
+import { Field, FieldLabel } from "@/ui/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
-  InputGroupInput,
-  InputGroupText,
   InputGroupTextarea,
 } from "@/ui/components/ui/input-group";
 import { ArrowUpIcon, ImageIcon } from "lucide-react";
-import { splitSentences } from "../services/summarize";
+import { useSummary } from "../store/use-summary";
+import { useNavigate } from "react-router";
 
 export function PromptInput() {
+  const startSummarization = useSummary((state) => state.startSummarization);
   const [input, setInput] = useState<string>("");
+  let navigate = useNavigate();
+
+  function onSubmit() {
+    const summary = startSummarization(input);
+    navigate(`/summary/${summary.id}`);
+  }
+
   return (
     <Field>
       <FieldLabel htmlFor="block-end-textarea">
@@ -42,7 +44,7 @@ export function PromptInput() {
             size="icon-sm"
             className="ml-auto"
             onClick={() => {
-              splitSentences(input);
+              onSubmit();
             }}
           >
             <ArrowUpIcon />

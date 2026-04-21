@@ -9,7 +9,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
 } from "@/ui/components/ui/sidebar";
 import {
   LanguagesIcon,
@@ -17,6 +16,8 @@ import {
   BookIcon,
   CircleQuestionMarkIcon,
 } from "lucide-react";
+import { useSummary } from "../store/use-summary";
+import { Link } from "react-router";
 
 type NavigationItem = {
   title?: string;
@@ -40,32 +41,23 @@ const navigation: Navigation = {
       items: [
         {
           title: "Explain Text",
-          url: "#",
+          url: "/",
           icon: LanguagesIcon,
         },
         {
           title: "Discovered",
-          url: "#",
+          url: "/discovered",
           icon: BookIcon,
         },
         {
           title: "Settings",
-          url: "#",
+          url: "/settings",
           icon: SettingsIcon,
         },
         {
           title: "How To Use",
-          url: "#",
+          url: "/howto",
           icon: CircleQuestionMarkIcon,
-        },
-      ],
-    },
-    {
-      title: "Recent",
-      items: [
-        {
-          title: "おはよ",
-          url: "#",
         },
       ],
     },
@@ -73,6 +65,7 @@ const navigation: Navigation = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const summaries = useSummary((state) => state.summaries.length);
   return (
     <Sidebar {...props}>
       <SidebarHeader className="titlebar">
@@ -92,9 +85,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
-                        <a href={item.url}>
+                        <Link to={item.url}>
                           {Icon && <Icon />} {item.title}
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
@@ -103,6 +96,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+        {summaries > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Recent</SidebarGroupLabel>
+            {useSummary.getState().summaries.map((summary) => (
+              <SidebarMenuItem key={summary.id}>
+                <SidebarMenuButton asChild>
+                  <Link to={`/summary/${summary.id}`}>
+                    {summary.promptText}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarGroup>
+        )}
       </SidebarContent>
     </Sidebar>
   );
