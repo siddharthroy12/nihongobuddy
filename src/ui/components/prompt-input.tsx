@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Field,
   FieldDescription,
@@ -17,6 +17,7 @@ import { ArrowUpIcon, ImageIcon } from "lucide-react";
 import { splitSentences } from "../services/summarize";
 
 export function PromptInput() {
+  const [input, setInput] = useState<string>("");
   return (
     <Field>
       <FieldLabel htmlFor="block-end-textarea">
@@ -26,6 +27,10 @@ export function PromptInput() {
         <InputGroupTextarea
           id="block-end-textarea"
           placeholder="Write a comment..."
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value);
+          }}
         />
         <InputGroupAddon align="block-end">
           <InputGroupButton variant="outline" size="sm" className="">
@@ -37,7 +42,7 @@ export function PromptInput() {
             size="icon-sm"
             className="ml-auto"
             onClick={() => {
-              splitSentences();
+              splitSentences(input);
             }}
           >
             <ArrowUpIcon />
