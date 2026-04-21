@@ -24,8 +24,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       ? "dark"
       : "light";
 
-    console.log(systemTheme);
-
     root.classList.add(systemTheme);
   }, []);
 

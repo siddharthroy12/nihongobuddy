@@ -14,6 +14,7 @@ import {
   InputGroupTextarea,
 } from "@/ui/components/ui/input-group";
 import { ArrowUpIcon, ImageIcon } from "lucide-react";
+import { splitSentences } from "../services/summarize";
 
 export function PromptInput() {
   return (
@@ -35,6 +36,9 @@ export function PromptInput() {
             variant="default"
             size="icon-sm"
             className="ml-auto"
+            onClick={() => {
+              splitSentences();
+            }}
           >
             <ArrowUpIcon />
           </InputGroupButton>

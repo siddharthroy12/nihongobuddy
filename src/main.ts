@@ -1,6 +1,8 @@
-import { app, BrowserWindow, nativeTheme } from "electron";
+import { app, BrowserWindow } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
+import { IpcMain } from "electron";
+import { loadHandlers } from "./ipc-handler";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -18,6 +20,8 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
+
+  loadHandlers();
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {

@@ -1,9 +1,8 @@
+import { runPrompt } from "./services/llm";
+
 // See the Electron documentation for details on how to use preload scripts:
+const { contextBridge, ipcRenderer } = require("electron");
 
-import { ipcRenderer } from "electron/renderer";
-
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-ipcRenderer.on("theme-changed", (_, isDark) => {
-  console.log({ isDark });
-  document.documentElement.classList.toggle("dark", isDark);
+contextBridge.exposeInMainWorld("electronAPI", {
+  runPrompt: (data: string) => ipcRenderer.invoke("llm:runPrompt", data),
 });
