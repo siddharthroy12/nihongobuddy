@@ -1,3 +1,5 @@
+import { GrammerPoint, Word } from "../types";
+
 function createPromptForSplitSentence(text: string) {
   return `
 YOU ARE A MACHINE THAT HAS ONLY ONE JOB AND THAT JOB IS TO EXTRACT JAPANESE SENTENCES AND WORDS FROM GIVEN TEXT AND RETURN
@@ -70,26 +72,22 @@ In your output only an array should be present. And the structure of the object 
 `;
 }
 
-export async function splitSentences(text: string) {
+export async function splitSentences(text: string): Promise<string[]> {
   const prompt = createPromptForSplitSentence(text);
   // @ts-ignore
-  const res = await window.electronAPI.runPrompt(prompt);
+  return await window.electronAPI.runPrompt(prompt);
 }
 
-export async function extractWords(sentence: string) {
+export async function extractWords(sentence: string): Promise<Word[]> {
   const prompt = createPromptForExtractingWords(sentence);
   // @ts-ignore
-  const res = await window.electronAPI.runPrompt(prompt);
+  return await window.electronAPI.runPrompt(prompt);
 }
 
-export async function getTranslationAndGrammarPoints(sentence: string) {
+export async function getTranslationAndGrammarPoints(
+  sentence: string,
+): Promise<{ translations: string; grammarpoins: GrammerPoint[] }> {
   const prompt = createPromptForTranslationAndGrammar(sentence);
   // @ts-ignore
-  const res = await window.electronAPI.runPrompt(prompt);
-}
-
-async function summarizeSentence(sentence: string) {}
-
-async function startSummrization(text: string) {
-  const sentences = await splitSentences(text);
+  return await window.electronAPI.runPrompt(prompt);
 }
