@@ -1,3 +1,4 @@
+import { runPromptWithJSONReponse } from "../lib/electron-api";
 import { GrammerPoint, Word } from "../types";
 
 function createPromptForSplitSentence(text: string) {
@@ -19,75 +20,65 @@ In your output only an array should be present.
 `;
 }
 
-function createPromptForExtractingWords(text: string) {
-  return `
-YOU ARE A MACHINE THAT HAS ONLY ONE JOB AND THAT JOB IS TO EXTRACT WORDS FROM JAPANESE SENTENCE. YOU'LL BE GIVEN A JAPANESE
-SENTENCES AND YOU HAVE TO GIVE AN ARRAY CONTAINING INFORMATION ABOUT WORDS.
-
-==== TEXT BEING ====
-${text}
-==== TEXT END ======
-
-Example Output:
-[
-    {
-        "word": "美味しい",
-        "type": "Adjective"
-        "furigana": "おいしい",
-        "meaning”: "Delicious, tasty"
-    },
-    {
-        "word": "です",
-        "type": "Copula / Polite Marker"
-        "furigana": "です",
-        "meaning”: "Is / To be (polite)	"
-    },
-]
-
-In your output only an array should be present. And the structure of the object should not change.
-`;
+export async function splitSentences(text: string): Promise<string[]> {
+  const prompt = createPromptForSplitSentence(text);
+  return await runPromptWithJSONReponse(prompt);
 }
 
-function createPromptForTranslationAndGrammar(text: string) {
+function createPromptForGeneratingSummary(text: string) {
   return `
-YOU ARE A MACHINE THAT HAS ONLY ONE JOB AND THAT JOB IS TO TRANSLATE GIVEN JAPANESE SENTENCE AND EXPLAIN GRAMAMR.
-YOUR OUTPUT WILL BE AN JSON AND ONLY JSON
+YOU ARE A JAPANESE LANGUAGE ANALYSIS MACHINE. YOUR ONLY JOB IS TO ANALYZE THE GIVEN TEXT AND RETURN A SINGLE JSON OBJECT.
 
-==== TEXT BEING ====
+==== TEXT BEGIN ====
 ${text}
-==== TEXT END ======
+==== TEXT END ====
+
+You must:
+1. Split the text into individual Japanese sentences/phrases
+2. For each sentence, extract all words with their details
+3. For each sentence, provide a translation and grammar points
 
 Example Output:
 {
-    "translation": "Not only in romance, but even among friends; once trust is lost, it takes a considerable amount of time to restore it.",
-    "grammarpoints": [
-        {"point": "〜だけではなく (dake dewa naku)", "explanation": "Grammatical pattern meaning 'not only X, but also Y.' It connects two related ideas while emphasizing that the initial domain (X) is not the only one affected."},
-        {"point": "の間でも (~no aida demo)", "explanation": "A combination of particles. '〜の' shows association. '間 (aida)' means space or among (people/things). Adding 'で (de)' marks location, and 'も (mo)' adds the meaning of 'even.' Together: 'even among [X]'. "},
-        {"point": "〜が最後 (ga saigo)", "explanation": "A set phrase that signifies a decisive point or moment. It means 'once X has occurred' or 'at last having lost/suffered X,' implying a lasting consequence."},
-        {"point": "Vるには (Vru ni wa)", "explanation": "Indicates condition or requirement, translating to 'in order to V' or 'for V to happen.' It sets up the necessary conditions for an action."}
-    ]
+  "sentences": [
+    {
+      "sentence": "美味しいですね。",
+      "translation": "It's delicious, isn't it?",
+      "words": [
+        {
+          "word": "美味しい",
+          "type": "Adjective",
+          "furigana": "おいしい",
+          "meaning": "Delicious, tasty"
+        },
+        {
+          "word": "です",
+          "type": "Copula / Polite Marker",
+          "furigana": "です",
+          "meaning": "Is / To be (polite)"
+        },
+        {
+          "word": "ね",
+          "type": "Sentence-ending particle",
+          "furigana": "ね",
+          "meaning": "Isn't it? / Right? (seeks agreement)"
+        }
+      ],
+      "grammarpoints": [
+        {
+          "point": "〜ですね (desu ne)",
+          "explanation": "Combining the polite copula です with the sentence-ending particle ね to seek agreement or confirmation from the listener."
+        }
+      ]
+    }
+  ]
 }
 
-In your output only an array should be present. And the structure of the object should not change.
+Return ONLY the JSON object. No extra text, no markdown, no backticks.
 `;
 }
 
-export async function splitSentences(text: string): Promise<string[]> {
-  const prompt = createPromptForSplitSentence(text);
-  // @ts-ignore
-  return await window.electronAPI.runPrompt(prompt);
-}
-
-export async function extractWords(sentence: string): Promise<Word[]> {
-  const prompt = createPromptForExtractingWords(sentence);
-  // @ts-ignore
-  return await window.electronAPI.runPrompt(prompt);
-}
-
-export async function getTranslationAndGrammarPoints(
-  sentence: string,
-): Promise<{ translations: string; grammarpoins: GrammerPoint[] }> {
-  const prompt = createPromptForTranslationAndGrammar(sentence);
-  // @ts-ignore
-  return await window.electronAPI.runPrompt(prompt);
+export async function generateSummary(text: string) {
+  const prompt = createPromptForGeneratingSummary(text);
+  return await runPromptWithJSONReponse(prompt);
 }

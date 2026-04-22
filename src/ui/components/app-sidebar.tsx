@@ -15,7 +15,20 @@ import {
   SettingsIcon,
   BookIcon,
   CircleQuestionMarkIcon,
+  EllipsisVerticalIcon,
+  CreditCardIcon,
+  LogOutIcon,
+  UserIcon,
+  TrashIcon,
+  StarIcon,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/ui/components/ui/dropdown-menu";
 import { useSummary } from "../store/use-summary";
 import { Link } from "react-router";
 
@@ -102,9 +115,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {useSummary.getState().summaries.map((summary) => (
               <SidebarMenuItem key={summary.id}>
                 <SidebarMenuButton asChild>
-                  <Link to={`/summary/${summary.id}`}>
-                    {summary.promptText}
-                  </Link>
+                  <div className="flex justify-between">
+                    <Link
+                      to={`/summary/${summary.id}`}
+                      className="w-full truncate"
+                    >
+                      {summary.promptText}
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button>
+                          <EllipsisVerticalIcon />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem variant="destructive">
+                          <TrashIcon />
+                          Delete
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <StarIcon />
+                          Star
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

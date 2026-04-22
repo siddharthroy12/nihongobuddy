@@ -1,10 +1,17 @@
 import { create } from "zustand";
-import {
-  extractWords,
-  getTranslationAndGrammarPoints,
-  splitSentences,
-} from "../services/summarize";
-import { SummaryState, SummaryActions, Sentence } from "../types";
+import { generateSummary } from "../services/summarize";
+import { Summary } from "../types";
+
+export type SummaryState = {
+  summaries: Summary[];
+};
+
+export type SummaryActions = {
+  startSummarization: (text: string) => Summary;
+  updateSummary: (id: string, summary: Partial<Summary>) => void;
+  saveSummaries: () => void;
+  loadSummaries: () => void;
+};
 
 export const useSummary = create<SummaryState & SummaryActions>()(
   (set, get) => ({
@@ -17,46 +24,50 @@ export const useSummary = create<SummaryState & SummaryActions>()(
       }));
     },
     startSummarization(text) {
-      const newSummary = {
+      const newSummary: Summary = {
         id: crypto.randomUUID(),
         promptText: text,
         promptImageUrl: "",
         processing: true,
-        processingStage: "Extracting sentences",
+        error: "",
         sentences: [],
       };
       set((state) => ({
         summaries: [...state.summaries, newSummary],
       }));
-      async () => {
+      (async () => {
         try {
-          const sentences: Sentence[] = await Promise.all(
-            (await splitSentences(text)).map(async (sentence) => {
-              const words = await extractWords(sentence);
-              const grammarAndTranslation =
-                await getTranslationAndGrammarPoints(sentence);
-              const res: Sentence = {
-                words: words,
-                translation: grammarAndTranslation.translations,
-                grammarPoints: grammarAndTranslation.grammarpoins,
-                sentence: sentence,
-              };
-              return res;
-            }),
-          );
+          const summary = await generateSummary(text);
           get().updateSummary(newSummary.id, {
             processing: false,
-            processingStage: "Done",
-            sentences,
+            sentences: summary.sentences,
           });
-        } catch {
+          get().saveSummaries();
+        } catch (e) {
           get().updateSummary(newSummary.id, {
             processing: false,
-            processingStage: "Failed",
+            error: e + "",
           });
+          throw e;
         }
-      };
+      })();
       return newSummary;
+    },
+    async saveSummaries() {
+      //@ts-ignore
+      await window.electronAPI.setSummaries(JSON.stringify(get()));
+    },
+    async loadSummaries() {
+      const summaries = JSON.parse(
+        // @ts-ignore
+        (await window.electronAPI.getSummaries()) ?? "{}",
+      );
+      console.log(summaries);
+      set({
+        ...summaries,
+      });
     },
   }),
 );
+
+useSummary.getState().loadSummaries();

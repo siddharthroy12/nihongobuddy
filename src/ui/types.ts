@@ -1,5 +1,5 @@
 export type Word = {
-  text: string;
+  word: string;
   type: string;
   furigana: string;
   meaning: string;
@@ -14,23 +14,22 @@ export type Sentence = {
   sentence: string;
   words: Word[];
   translation: string;
-  grammarPoints: GrammerPoint[];
+  grammarpoints: GrammerPoint[];
 };
 
 export type Summary = {
   promptText: string;
   promptImageUrl: string;
   processing: boolean;
-  processingStage: string;
   sentences: Sentence[];
   id: string;
+  error: string;
 };
 
-export type SummaryState = {
-  summaries: Summary[];
-};
-
-export type SummaryActions = {
-  startSummarization: (text: string) => Summary;
-  updateSummary: (id: string, summary: Partial<Summary>) => void;
+export type Settings = {
+  llm: {
+    llmBaseUrl: string;
+    llmApiKey: string;
+    llmModel: string;
+  };
 };

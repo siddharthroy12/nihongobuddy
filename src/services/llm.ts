@@ -1,17 +1,24 @@
 import OpenAI from "openai";
-const client = new OpenAI({
-  baseURL: "http://127.0.0.1:1234/v1", // your local LLM's URL
-  apiKey: "ollama", // most local servers don't check this
-});
+import { settings } from "./store";
 
 export async function runPrompt(prompt: string) {
-  console.log(prompt);
+  const settingsData = JSON.parse(settings.get());
+  const client = new OpenAI({
+    baseURL: settingsData?.["llm"]?.["llmBaseUrl"] ?? "", // your local LLM's URL
+    apiKey: settingsData?.["llm"]?.["llmApiKey"] ?? "", // most local servers don't check this
+  });
   try {
-    const response = await client.responses.create({
-      model: "google/gemma-4-e4b",
-      input: prompt,
+    const response = await client.chat.completions.create({
+      model: settingsData?.["llm"]?.["llmModel"],
+      messages: [
+        { role: "system", content: "You are a helpful assistant." },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
     });
-    return response.output_text;
+    return response.choices[0].message.content;
   } catch (e) {
     console.error(e);
   }
