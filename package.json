@@ -1,8 +1,8 @@
 {
-  "name": "japanese-helper",
-  "productName": "japanese-helper",
+  "name": "japanesebuddy",
+  "productName": "Japanese Buddy",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "A tool to help with learning Japanese",
   "main": ".vite/build/main.js",
   "private": true,
   "scripts": {

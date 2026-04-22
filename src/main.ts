@@ -1,7 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
-import { IpcMain } from "electron";
 import { loadHandlers } from "./ipc-handler";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -12,6 +11,7 @@ if (started) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    title: "Japanese Buddy",
     width: 800,
     height: 600,
     frame: false, // removes native titlebar/frame
