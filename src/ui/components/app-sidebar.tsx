@@ -58,7 +58,7 @@ const navigation: Navigation = {
           icon: LanguagesIcon,
         },
         {
-          title: "Discovered",
+          title: "Dictionary",
           url: "/discovered",
           icon: BookIcon,
         },

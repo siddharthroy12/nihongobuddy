@@ -34,7 +34,7 @@ export function ColoredWord({ word, type, furigana, meaning }: Word) {
             {word}
           </div>
           <div
-            className="bg-white absolute bottom-[-5px] left-0 right-0 h-[5px] opacity-50"
+            className="bg-white absolute bottom-[-3px] left-0 right-0 h-[10px] opacity-50 rounded-xs"
             style={{
               background,
             }}
