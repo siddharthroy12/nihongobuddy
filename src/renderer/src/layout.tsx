@@ -1,4 +1,3 @@
-import React from 'react'
 import { SidebarProvider } from '@renderer/components/ui/sidebar'
 import { AppSidebar } from '@renderer/components/app-sidebar'
 import { Outlet } from 'react-router'

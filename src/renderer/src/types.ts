@@ -1,35 +1,36 @@
 export type Word = {
-  word: string;
-  type: string;
-  furigana: string;
-  meaning: string;
-};
+  word: string
+  type: string
+  furigana: string
+  meaning: string
+}
 
 export type GrammerPoint = {
-  point: string;
-  explanation: string;
-};
+  point: string
+  explanation: string
+}
 
 export type Sentence = {
-  sentence: string;
-  words: Word[];
-  translation: string;
-  grammarpoints: GrammerPoint[];
-};
+  sentence: string
+  words: Word[]
+  translation: string
+  grammarpoints: GrammerPoint[]
+}
 
 export type Summary = {
-  promptText: string;
-  promptImageUrl: string;
-  processing: boolean;
-  sentences: Sentence[];
-  id: string;
-  error: string;
-};
+  promptText: string
+  promptImageUrl: string
+  processing: boolean
+  sentences: Sentence[]
+  id: string
+  error: string
+  starred: boolean
+}
 
 export type Settings = {
   llm: {
-    llmBaseUrl: string;
-    llmApiKey: string;
-    llmModel: string;
-  };
-};
+    llmBaseUrl: string
+    llmApiKey: string
+    llmModel: string
+  }
+}

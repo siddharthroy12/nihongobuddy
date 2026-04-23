@@ -16,9 +16,6 @@ import {
   BookIcon,
   CircleQuestionMarkIcon,
   EllipsisVerticalIcon,
-  CreditCardIcon,
-  LogOutIcon,
-  UserIcon,
   TrashIcon,
   StarIcon
 } from 'lucide-react'
@@ -26,11 +23,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@renderer/components/ui/dropdown-menu'
 import { useSummary } from '../store/use-summary'
 import { Link } from 'react-router'
+import { Summary } from '@renderer/types'
 
 type NavigationItem = {
   title?: string
@@ -77,8 +74,53 @@ const navigation: Navigation = {
   ]
 }
 
+function SummaryListItem(summary: Summary) {
+  const startSummary = useSummary((state) => state.starSummary)
+  const deleteSummary = useSummary((state) => state.deleteSummary)
+  return (
+    <SidebarMenuItem key={summary.id}>
+      <SidebarMenuButton asChild>
+        <div className="flex justify-between">
+          <Link to={`/summary/${summary.id}`} className="w-full truncate">
+            {summary.promptText}
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button>
+                <EllipsisVerticalIcon />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => {
+                  deleteSummary(summary.id)
+                }}
+              >
+                <TrashIcon />
+                Delete
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  startSummary(summary.id)
+                }}
+              >
+                <StarIcon fill={summary.starred ? 'white' : 'unset'} />
+                {summary.starred ? 'Unstar' : 'Star'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const summaries = useSummary((state) => state.summaries.length)
+  const starredSummaries = useSummary(
+    (state) => state.summaries.filter((summary) => summary.starred).length
+  )
   return (
     <Sidebar {...props}>
       <SidebarHeader className="titlebar">
@@ -108,37 +150,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
         {summaries > 0 && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Recent</SidebarGroupLabel>
-            {useSummary.getState().summaries.map((summary) => (
-              <SidebarMenuItem key={summary.id}>
-                <SidebarMenuButton asChild>
-                  <div className="flex justify-between">
-                    <Link to={`/summary/${summary.id}`} className="w-full truncate">
-                      {summary.promptText}
-                    </Link>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button>
-                          <EllipsisVerticalIcon />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem variant="destructive">
-                          <TrashIcon />
-                          Delete
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <StarIcon />
-                          Star
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarGroup>
+          <>
+            {starredSummaries > 0 && (
+              <SidebarGroup>
+                <SidebarGroupLabel>Starred</SidebarGroupLabel>
+                {useSummary
+                  .getState()
+                  .summaries.filter((summary) => summary.starred)
+                  .map((summary) => (
+                    <SummaryListItem key={summary.id} {...summary} />
+                  ))}
+              </SidebarGroup>
+            )}
+            <SidebarGroup>
+              <SidebarGroupLabel>Recent</SidebarGroupLabel>
+              {useSummary.getState().summaries.map((summary) => (
+                <SummaryListItem key={summary.id} {...summary} />
+              ))}
+            </SidebarGroup>
+          </>
         )}
       </SidebarContent>
     </Sidebar>

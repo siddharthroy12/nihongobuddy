@@ -1,7 +1,7 @@
 import { useSummary } from '../store/use-summary'
 import { useParams, useNavigate } from 'react-router'
 import { Spinner } from '../components/ui/spinner'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { ColoredWords } from '../components/colored-words'
 import { Button } from '@renderer/components/ui/button'
 import { RotateCwIcon, TrashIcon } from 'lucide-react'
