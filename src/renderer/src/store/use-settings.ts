@@ -14,6 +14,9 @@ export const useSettings = create<SettingsState & SettingsActions>()((set, get) 
     llmBaseUrl: '',
     llmModel: ''
   },
+  shortcut: {
+    quicksummary: ''
+  },
   async saveSettings() {
     const json = JSON.stringify(get())
     // @ts-ignore

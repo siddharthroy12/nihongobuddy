@@ -33,4 +33,7 @@ export type Settings = {
     llmApiKey: string
     llmModel: string
   }
+  shortcut: {
+    quicksummary: string
+  }
 }

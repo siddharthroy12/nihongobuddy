@@ -1,6 +1,5 @@
-import React from "react";
-import { PromptInput } from "../components/prompt-input";
-import { LanguagesIcon } from "lucide-react";
+import { PromptInput } from '../components/prompt-input'
+import { LanguagesIcon } from 'lucide-react'
 
 export default function ExplainTextPage() {
   return (
@@ -12,5 +11,5 @@ export default function ExplainTextPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

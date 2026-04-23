@@ -11,7 +11,10 @@ import { Input } from '@renderer/components/ui/input'
 import { useSettings } from '../store/use-settings'
 import { useDebounceEffect } from '../hooks/use-debounce'
 import { LLMTestButton } from '../components/llm-test-button'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { Button } from '@renderer/components/ui/button'
+import { ButtonGroup } from '@renderer/components/ui/button-group'
+import { TrashIcon } from 'lucide-react'
 
 function EyeIcon() {
   return (
@@ -53,6 +56,141 @@ function EyeOffIcon() {
   )
 }
 
+function ShortcutRecorder({
+  value,
+  onChange
+}: {
+  value: string
+  onChange: (shortcut: string) => void
+}) {
+  const [isRecording, setIsRecording] = useState(false)
+  const [displayValue, setDisplayValue] = useState(value || 'Not set')
+  const ref = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    setDisplayValue(value || 'Click to set a shortcut')
+  }, [value])
+
+  const formatKeys = (e: KeyboardEvent): string => {
+    const parts: string[] = []
+    if (e.metaKey) parts.push('Meta')
+    if (e.ctrlKey) parts.push('Ctrl')
+    if (e.altKey) parts.push('Alt')
+    if (e.shiftKey) parts.push('Shift')
+
+    const key = e.key
+    if (!['Meta', 'Control', 'Alt', 'Shift'].includes(key)) {
+      parts.push(key.length === 1 ? key.toUpperCase() : key)
+    }
+
+    return parts.join('+')
+  }
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    // Allow Escape to cancel recording
+    if (e.key === 'Escape') {
+      setIsRecording(false)
+      setDisplayValue(value || 'Not set')
+      return
+    }
+
+    // Require at least one modifier key
+    if (!e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) return
+
+    const shortcut = formatKeys(e)
+    // Need a non-modifier key too
+    if (['Meta', 'Ctrl', 'Alt', 'Shift'].includes(e.key)) return
+
+    setDisplayValue(shortcut)
+    onChange(shortcut)
+    setIsRecording(false)
+  }
+
+  useEffect(() => {
+    if (isRecording) {
+      window.addEventListener('keydown', handleKeyDown, true)
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, true)
+    }
+  }, [isRecording, value])
+
+  const handleClick = () => {
+    setIsRecording(true)
+    setDisplayValue('Press shortcut...')
+    ref.current?.focus()
+  }
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onChange('')
+    setDisplayValue('Not set')
+    setIsRecording(false)
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <ButtonGroup>
+        <Button
+          ref={ref}
+          variant={'outline'}
+          onClick={handleClick}
+          onBlur={() => {
+            if (isRecording) {
+              setIsRecording(false)
+              setDisplayValue(value || 'Not set')
+            }
+          }}
+          className={[
+            isRecording
+              ? 'border-primary bg-primary/10 text-primary ring-2 ring-primary/30 animate-pulse'
+              : 'border-input bg-background hover:bg-accent hover:text-accent-foreground text-foreground'
+          ].join(' ')}
+        >
+          {isRecording ? (
+            <>
+              <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+              {displayValue}
+            </>
+          ) : (
+            <>
+              <KeyboardIcon />
+              {displayValue}
+            </>
+          )}
+        </Button>
+        {value && !isRecording && (
+          <Button variant={'outline'} onClick={handleClear}>
+            <TrashIcon className="text-destructive" />
+          </Button>
+        )}
+      </ButtonGroup>
+    </div>
+  )
+}
+
+function KeyboardIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="20" height="16" x="2" y="4" rx="2" ry="2" />
+      <path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10" />
+    </svg>
+  )
+}
+
 export function SettingsPage() {
   const settings = useSettings()
   const saveSettings = useSettings((state) => state.saveSettings)
@@ -66,6 +204,7 @@ export function SettingsPage() {
     <div className="w-full">
       <form>
         <FieldGroup>
+          {/* LLM Settings */}
           <FieldSet>
             <FieldLegend>LLM Settings</FieldLegend>
             <FieldDescription>Choose which LLM to connect to.</FieldDescription>
@@ -129,7 +268,32 @@ export function SettingsPage() {
               </Field>
             </FieldGroup>
           </FieldSet>
+
           <LLMTestButton />
+
+          {/* Shortcut Settings */}
+          <FieldSet>
+            <FieldLegend>Shortcut</FieldLegend>
+            <FieldDescription>
+              Configure a shortcut key to scan the screen and give translation and summary on a
+              overlay window.
+            </FieldDescription>
+            <FieldGroup>
+              <Field>
+                <ShortcutRecorder
+                  value={settings.shortcut?.quicksummary ?? ''}
+                  onChange={(shortcut) => {
+                    useSettings.setState({
+                      shortcut: {
+                        ...useSettings.getState().shortcut,
+                        quicksummary: shortcut
+                      }
+                    })
+                  }}
+                />
+              </Field>
+            </FieldGroup>
+          </FieldSet>
         </FieldGroup>
       </form>
     </div>
