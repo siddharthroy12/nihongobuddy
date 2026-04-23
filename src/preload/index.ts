@@ -2,13 +2,24 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api = {}
+const api: any = {}
 
-const handlers = ['runPrompt', 'setSettings', 'getSettings', 'setSummaries', 'getSummaries']
+const handlers = [
+  'runPrompt',
+  'setSettings',
+  'getSettings',
+  'setSummaries',
+  'getSummaries',
+  'registerShortcuts',
+  'closeOverlayWindow'
+]
 
 handlers.forEach((key) => {
   api[key] = (data: any) => ipcRenderer.invoke(key, data)
 })
+
+api.onScreenshot = (cb: (dataUrl: string) => void) =>
+  ipcRenderer.on('screenshot-data', (_, dataUrl) => cb(dataUrl))
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

@@ -36,9 +36,9 @@ export function PromptInput() {
     }
   }
 
-  function onSubmit() {
-    const summary = startSummarization(input)
-    navigate(`/summary/${summary.id}`)
+  async function onSubmit() {
+    const summary = await startSummarization(input)
+    navigate(`/summary/${summary!.id}`)
   }
 
   return (

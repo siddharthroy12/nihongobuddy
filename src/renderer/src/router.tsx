@@ -6,6 +6,7 @@ import { SummaryPage } from './pages/summary-page'
 import { SettingsPage } from './pages/settings-page'
 import { NotFoundPage } from './pages/not-found'
 import { DictionaryPage } from './pages/dictionary-page'
+import { OverlayPage } from './pages/overlay-page'
 
 export const router = createHashRouter([
   // changed
@@ -17,6 +18,7 @@ export const router = createHashRouter([
       { path: 'settings', Component: SettingsPage },
       { path: 'summary/:id', Component: SummaryPage },
       { path: 'dictionary', Component: DictionaryPage },
+      { path: 'overlay', Component: OverlayPage },
       { path: '*', Component: NotFoundPage }
     ]
   }

@@ -25,6 +25,8 @@ export const useSettings = create<SettingsState & SettingsActions>()((set, get) 
     const json = JSON.stringify(get())
     // @ts-ignore
     window.api.setSettings(json)
+    // @ts-ignore
+    window.api.registerShortcuts()
   },
   async loadSettings() {
     // @ts-ignore

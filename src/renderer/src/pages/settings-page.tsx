@@ -38,32 +38,41 @@ function ShortcutRecorder({
     if (e.altKey) parts.push('Alt')
     if (e.shiftKey) parts.push('Shift')
 
-    const key = e.key
-    if (!['Meta', 'Control', 'Alt', 'Shift'].includes(key)) {
-      parts.push(key.length === 1 ? key.toUpperCase() : key)
+    const keyAliases: Record<string, string> = {
+      ' ': 'Space',
+      Spacebar: 'Space',
+      Space: 'Space',
+      ArrowUp: '↑',
+      ArrowDown: '↓',
+      ArrowLeft: '←',
+      ArrowRight: '→'
     }
 
-    return parts.join('+')
+    const key = e.key
+    if (!['Meta', 'Control', 'Alt', 'Shift'].includes(key)) {
+      const normalized = keyAliases[key] ?? (key.length === 1 ? key.toUpperCase() : key)
+      parts.push(normalized)
+    }
+
+    console.log(parts.join('+').replace(' ', 'Space'))
+
+    return parts.join('+').replace(' ', 'Space')
   }
 
   const handleKeyDown = (e: KeyboardEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
-    // Allow Escape to cancel recording
     if (e.key === 'Escape') {
       setIsRecording(false)
       setDisplayValue(value || 'Not set')
       return
     }
 
-    // Require at least one modifier key
     if (!e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) return
+    if (['Meta', 'Control', 'Alt', 'Shift'].includes(e.key)) return // ← 'Control' not 'Ctrl'
 
     const shortcut = formatKeys(e)
-    // Need a non-modifier key too
-    if (['Meta', 'Ctrl', 'Alt', 'Shift'].includes(e.key)) return
-
     setDisplayValue(shortcut)
     onChange(shortcut)
     setIsRecording(false)

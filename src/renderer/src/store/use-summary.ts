@@ -7,8 +7,9 @@ export type SummaryState = {
 }
 
 export type SummaryActions = {
-  startSummarization: (text: string) => Summary
-  retrySummarization: (id: string) => void
+  startSummarization: (text: string) => Promise<Summary | undefined>
+  retrySummarization: (id: string) => Promise<Summary | undefined>
+  getSummary: (id: string) => Summary | undefined
   updateSummary: (id: string, summary: Partial<Summary>) => void
   saveSummaries: () => void
   loadSummaries: () => void
@@ -22,6 +23,9 @@ const defaultState: SummaryState = {
 
 export const useSummary = create<SummaryState & SummaryActions>()((set, get) => ({
   ...defaultState,
+  getSummary(id: string) {
+    return get().summaries.find((s) => s.id === id)
+  },
   updateSummary(id, newProps) {
     set((state) => ({
       summaries: state.summaries.map((s) => (s.id === id ? { ...s, ...newProps } : s))
@@ -39,29 +43,29 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
     }))
     get().saveSummaries()
   },
-  retrySummarization(id) {
+  async retrySummarization(id) {
     const summary = get().summaries.find((s) => s.id === id)
     if (!summary || summary.processing) return
 
     get().updateSummary(id, { processing: true, error: '', sentences: [] })
-    ;(async () => {
-      try {
-        const result = await generateSummary(summary.promptText)
-        get().updateSummary(id, {
-          processing: false,
-          sentences: result?.sentences ?? []
-        })
-        get().saveSummaries()
-      } catch (e) {
-        get().updateSummary(id, {
-          processing: false,
-          error: e + ''
-        })
-        throw e
-      }
-    })()
+    try {
+      const result = await generateSummary(summary.promptText)
+      get().updateSummary(id, {
+        processing: false,
+        sentences: result?.sentences ?? []
+      })
+      get().saveSummaries()
+    } catch (e) {
+      get().updateSummary(id, {
+        processing: false,
+        error: e + ''
+      })
+      throw e
+    }
+
+    return get().getSummary(id)
   },
-  startSummarization(text) {
+  async startSummarization(text) {
     const newSummary: Summary = {
       id: crypto.randomUUID(),
       promptText: text,
@@ -74,23 +78,21 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
     set((state) => ({
       summaries: [...state.summaries, newSummary]
     }))
-    ;(async () => {
-      try {
-        const summary = await generateSummary(text)
-        get().updateSummary(newSummary.id, {
-          processing: false,
-          sentences: summary?.sentences ?? []
-        })
-        get().saveSummaries()
-      } catch (e) {
-        get().updateSummary(newSummary.id, {
-          processing: false,
-          error: e + ''
-        })
-        throw e
-      }
-    })()
-    return newSummary
+    try {
+      const summary = await generateSummary(text)
+      get().updateSummary(newSummary.id, {
+        processing: false,
+        sentences: summary?.sentences ?? []
+      })
+      get().saveSummaries()
+    } catch (e) {
+      get().updateSummary(newSummary.id, {
+        processing: false,
+        error: e + ''
+      })
+      throw e
+    }
+    return get().getSummary(newSummary.id)
   },
   async saveSummaries() {
     //@ts-ignore

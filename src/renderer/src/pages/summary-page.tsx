@@ -12,6 +12,7 @@ import {
   ItemMedia,
   ItemTitle
 } from '@renderer/components/ui/item'
+import { Summary } from '@renderer/types'
 
 function InputPreview({ prompt, processing }: { prompt: string; processing?: boolean }) {
   return (
@@ -22,6 +23,32 @@ function InputPreview({ prompt, processing }: { prompt: string; processing?: boo
         <ItemDescription>{prompt}</ItemDescription>
       </ItemContent>
     </Item>
+  )
+}
+
+export function SummaryComp(summary: Summary) {
+  return (
+    <div className="flex flex-col gap-5">
+      {summary?.sentences
+        ?.filter((sentence) => sentence?.words?.length > 0)
+        ?.map((sentence) => (
+          <Card size="sm" className="rounded-md">
+            <CardHeader>
+              <ColoredWords words={sentence.words} />
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2">
+              <blockquote className="border-l-2 pl-6 italic">{sentence.translation}</blockquote>
+              <ul className="ml-6 list-disc [&>li]:mt-2">
+                {sentence?.grammarpoints?.map((point) => (
+                  <li>
+                    {point.point}: {point.explanation}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        ))}
+    </div>
   )
 }
 
@@ -74,25 +101,7 @@ export function SummaryPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      {summary?.sentences
-        ?.filter((sentence) => sentence?.words?.length > 0)
-        ?.map((sentence) => (
-          <Card size="sm" className="rounded-md">
-            <CardHeader>
-              <ColoredWords words={sentence.words} />
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <blockquote className="border-l-2 pl-6 italic">{sentence.translation}</blockquote>
-              <ul className="ml-6 list-disc [&>li]:mt-2">
-                {sentence?.grammarpoints?.map((point) => (
-                  <li>
-                    {point.point}: {point.explanation}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        ))}
+      <SummaryComp {...summary!} />
     </div>
   )
 }

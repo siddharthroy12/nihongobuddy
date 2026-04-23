@@ -75,7 +75,7 @@ const navigation: Navigation = {
 }
 
 function SummaryListItem(summary: Summary) {
-  const location = useLocation() // 👈 add this
+  const location = useLocation()
 
   const startSummary = useSummary((state) => state.starSummary)
   const deleteSummary = useSummary((state) => state.deleteSummary)
@@ -108,7 +108,7 @@ function SummaryListItem(summary: Summary) {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const location = useLocation() // 👈 add this
+  const location = useLocation()
 
   const summaries = useSummary((state) => state.summaries.length)
   const starredSummaries = useSummary(

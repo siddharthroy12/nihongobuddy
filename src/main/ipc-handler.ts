@@ -1,6 +1,7 @@
-import { ipcMain } from "electron";
-import { runPrompt } from "./services/llm";
-import { settings, summaries } from "./services/store";
+import { ipcMain } from 'electron'
+import { runPrompt } from './services/llm'
+import { settings, summaries } from './services/store'
+import { closeOverlayWindow, registerShortcuts } from './services/shortcut'
 
 const handlers: { [key: string]: (a: any) => any } = {
   runPrompt: runPrompt,
@@ -8,10 +9,12 @@ const handlers: { [key: string]: (a: any) => any } = {
   getSettings: settings.get,
   setSummaries: summaries.set,
   getSummaries: summaries.get,
-};
+  registerShortcuts: registerShortcuts,
+  closeOverlayWindow: closeOverlayWindow
+}
 
 export function loadHandlers() {
   Object.keys(handlers).forEach((key) => {
-    ipcMain.handle(key, (_, data) => handlers[key](data));
-  });
+    ipcMain.handle(key, (_, data) => handlers[key](data))
+  })
 }
