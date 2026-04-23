@@ -4,7 +4,26 @@ import { Spinner } from '../components/ui/spinner'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { ColoredWords } from '../components/colored-words'
 import { Button } from '@renderer/components/ui/button'
-import { RotateCwIcon, TrashIcon } from 'lucide-react'
+import { RotateCwIcon, ScanText, TrashIcon } from 'lucide-react'
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle
+} from '@renderer/components/ui/item'
+
+function InputPreview({ prompt, processing }: { prompt: string; processing?: boolean }) {
+  return (
+    <Item variant="outline">
+      <ItemMedia variant="icon">{processing ? <Spinner /> : <ScanText />}</ItemMedia>
+      <ItemContent>
+        <ItemTitle>{processing ? 'Processing' : 'Input'}</ItemTitle>
+        <ItemDescription>{prompt}</ItemDescription>
+      </ItemContent>
+    </Item>
+  )
+}
 
 export function SummaryPage() {
   const { id } = useParams()
@@ -17,11 +36,7 @@ export function SummaryPage() {
   if (summary?.processing) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-3">
-        <Card className="max-w-[500px] w-full rounded-sm p-3 max-h-[200px] overflow-scroll">
-          {summary.promptText}
-        </Card>
-        <Spinner />
-        Processing...
+        <InputPreview prompt={summary.promptText} processing />
       </div>
     )
   }
@@ -29,9 +44,7 @@ export function SummaryPage() {
   if (summary?.error || summary?.sentences?.length === 0) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-4">
-        <Card className="max-w-[500px] w-full rounded-sm p-3 max-h-[200px] overflow-scroll">
-          {summary.promptText}
-        </Card>
+        <InputPreview prompt={summary.promptText} />
         <p className="text-destructive font-medium">Failed to summarize</p>
         {!!summary.error && <p className="text-muted-foreground text-sm">{summary.error}</p>}
         <div className="flex gap-3">

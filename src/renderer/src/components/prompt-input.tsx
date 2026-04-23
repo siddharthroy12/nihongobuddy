@@ -90,7 +90,7 @@ export function PromptInput() {
             size="icon-sm"
             className="ml-auto"
             onClick={onSubmit}
-            disabled={isProcessingImage}
+            disabled={isProcessingImage || input.trim() === ''}
           >
             <ArrowUpIcon />
           </InputGroupButton>
