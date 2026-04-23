@@ -52,7 +52,7 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
         const summary = await generateSummary(text)
         get().updateSummary(newSummary.id, {
           processing: false,
-          sentences: summary.sentences
+          sentences: summary?.sentences ?? []
         })
         get().saveSummaries()
       } catch (e) {
@@ -74,7 +74,6 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
       // @ts-ignore
       (await window.api.getSummaries()) ?? '{}'
     )
-    console.log(summaries)
     set({
       ...summaries
     })
