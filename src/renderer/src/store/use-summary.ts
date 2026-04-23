@@ -16,8 +16,12 @@ export type SummaryActions = {
   starSummary: (id: string) => void
 }
 
+const defaultState: SummaryState = {
+  summaries: []
+}
+
 export const useSummary = create<SummaryState & SummaryActions>()((set, get) => ({
-  summaries: [],
+  ...defaultState,
   updateSummary(id, newProps) {
     set((state) => ({
       summaries: state.summaries.map((s) => (s.id === id ? { ...s, ...newProps } : s))
@@ -95,7 +99,7 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
   async loadSummaries() {
     const summaries = JSON.parse(
       // @ts-ignore
-      (await window.api.getSummaries()) ?? '{}'
+      (await window.api.getSummaries()) ?? JSON.stringify(defaultState)
     )
     set({
       ...summaries

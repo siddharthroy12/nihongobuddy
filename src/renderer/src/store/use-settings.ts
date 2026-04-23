@@ -8,7 +8,7 @@ type SettingsActions = {
   loadSettings: () => void
 }
 
-export const useSettings = create<SettingsState & SettingsActions>()((set, get) => ({
+const defaultState: Settings = {
   llm: {
     llmApiKey: '',
     llmBaseUrl: '',
@@ -16,7 +16,11 @@ export const useSettings = create<SettingsState & SettingsActions>()((set, get) 
   },
   shortcut: {
     quicksummary: ''
-  },
+  }
+}
+
+export const useSettings = create<SettingsState & SettingsActions>()((set, get) => ({
+  ...defaultState,
   async saveSettings() {
     const json = JSON.stringify(get())
     // @ts-ignore
@@ -26,14 +30,10 @@ export const useSettings = create<SettingsState & SettingsActions>()((set, get) 
     // @ts-ignore
     const settings = JSON.parse(
       // @ts-ignore
-      (await window.api.getSettings()) ?? '{}'
+      (await window.api.getSettings()) ?? JSON.stringify(defaultState)
     )
     set({
-      llm: {
-        llmApiKey: settings?.llm?.llmApiKey,
-        llmBaseUrl: settings?.llm?.llmBaseUrl,
-        llmModel: settings?.llm?.llmModel
-      }
+      ...settings
     })
   }
 }))
