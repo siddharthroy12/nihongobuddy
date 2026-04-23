@@ -4,7 +4,7 @@ import { Spinner } from '../components/ui/spinner'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { ColoredWords } from '../components/colored-words'
 import { Button } from '@renderer/components/ui/button'
-import { RotateCwIcon, ScanText, TrashIcon } from 'lucide-react'
+import { BanIcon, RotateCwIcon, ScanText, TrashIcon } from 'lucide-react'
 import {
   Item,
   ItemContent,
@@ -17,9 +17,9 @@ import { Summary } from '@renderer/types'
 function InputPreview({ prompt, processing }: { prompt: string; processing?: boolean }) {
   return (
     <Item variant="outline">
-      <ItemMedia variant="icon">{processing ? <Spinner /> : <ScanText />}</ItemMedia>
+      <ItemMedia variant="icon">{processing ? <Spinner /> : <BanIcon />}</ItemMedia>
       <ItemContent>
-        <ItemTitle>{processing ? 'Processing' : 'Input'}</ItemTitle>
+        <ItemTitle>{processing ? 'Processing' : 'Failed to process'}</ItemTitle>
         <ItemDescription>{prompt}</ItemDescription>
       </ItemContent>
     </Item>
@@ -72,7 +72,6 @@ export function SummaryPage() {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-4">
         <InputPreview prompt={summary.promptText} />
-        <p className="text-destructive font-medium">Failed to summarize</p>
         {!!summary.error && <p className="text-muted-foreground text-sm">{summary.error}</p>}
         <div className="flex gap-3">
           <Button

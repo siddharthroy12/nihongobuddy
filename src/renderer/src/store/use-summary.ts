@@ -95,8 +95,13 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
     return get().getSummary(newSummary.id)
   },
   async saveSummaries() {
+    // We don't process thing in background so as soon as the app is closed the processing stops
+    const copy = get()
+    copy.summaries.forEach((summmary) => {
+      summmary.processing = false
+    })
     //@ts-ignore
-    await window.api.setSummaries(JSON.stringify(get()))
+    await window.api.setSummaries(JSON.stringify(copy))
   },
   async loadSummaries() {
     const summaries = JSON.parse(
