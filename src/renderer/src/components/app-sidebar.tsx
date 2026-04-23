@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger
 } from '@renderer/components/ui/dropdown-menu'
 import { useSummary } from '../store/use-summary'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { Summary } from '@renderer/types'
 
 type NavigationItem = {
@@ -75,11 +75,13 @@ const navigation: Navigation = {
 }
 
 function SummaryListItem(summary: Summary) {
+  const location = useLocation() // 👈 add this
+
   const startSummary = useSummary((state) => state.starSummary)
   const deleteSummary = useSummary((state) => state.deleteSummary)
   return (
     <SidebarMenuItem key={summary.id}>
-      <SidebarMenuButton asChild>
+      <SidebarMenuButton asChild isActive={location.pathname === `/summary/${summary.id}`}>
         <Link to={`/summary/${summary.id}`} className="flex justify-between items-center w-full">
           <span className="truncate">{summary.promptText}</span>
           <DropdownMenu>
@@ -106,6 +108,8 @@ function SummaryListItem(summary: Summary) {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const location = useLocation() // 👈 add this
+
   const summaries = useSummary((state) => state.summaries.length)
   const starredSummaries = useSummary(
     (state) => state.summaries.filter((summary) => summary.starred).length
@@ -126,7 +130,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   let Icon = item.icon
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={location.pathname === item.url}>
                         <Link to={item.url}>
                           {Icon && <Icon />} {item.title}
                         </Link>
