@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router'
+import { Link, useLocation } from 'react-router'
 
 export function NotFoundPage() {
   const location = useLocation()
@@ -10,9 +10,9 @@ export function NotFoundPage() {
       <p style={{ color: 'gray', marginTop: '0.5rem' }}>
         No route matches <code>{location.pathname}</code>
       </p>
-      <a href="/" style={{ marginTop: '1.5rem', display: 'inline-block' }}>
+      <Link to="/" style={{ marginTop: '1.5rem', display: 'inline-block' }}>
         ← Go home
-      </a>
+      </Link>
     </div>
   )
 }

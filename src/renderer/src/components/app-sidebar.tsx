@@ -56,7 +56,7 @@ const navigation: Navigation = {
         },
         {
           title: 'Dictionary',
-          url: '/discovered',
+          url: '/dictionary',
           icon: BookIcon
         },
         {
@@ -80,37 +80,26 @@ function SummaryListItem(summary: Summary) {
   return (
     <SidebarMenuItem key={summary.id}>
       <SidebarMenuButton asChild>
-        <div className="flex justify-between">
-          <Link to={`/summary/${summary.id}`} className="w-full truncate">
-            {summary.promptText}
-          </Link>
+        <Link to={`/summary/${summary.id}`} className="flex justify-between items-center w-full">
+          <span className="truncate">{summary.promptText}</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button>
+              <button onClick={(e) => e.preventDefault()}>
                 <EllipsisVerticalIcon />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem
-                variant="destructive"
-                onClick={() => {
-                  deleteSummary(summary.id)
-                }}
-              >
+              <DropdownMenuItem variant="destructive" onClick={() => deleteSummary(summary.id)}>
                 <TrashIcon />
                 Delete
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  startSummary(summary.id)
-                }}
-              >
+              <DropdownMenuItem onClick={() => startSummary(summary.id)}>
                 <StarIcon fill={summary.starred ? 'white' : 'unset'} />
                 {summary.starred ? 'Unstar' : 'Star'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
   )

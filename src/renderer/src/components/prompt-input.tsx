@@ -44,7 +44,9 @@ export function PromptInput() {
   return (
     <Field>
       <FieldLabel htmlFor="block-end-textarea">
-        <p className="text-xl">Enter 日本語 To Summarize The Sentence</p>
+        <p className="text-xl">
+          Enter <span className="text-primary">日本語</span> To Summarize The Sentence
+        </p>
       </FieldLabel>
       <input
         ref={fileInputRef}
@@ -56,7 +58,6 @@ export function PromptInput() {
       <InputGroup>
         <InputGroupTextarea
           id="block-end-textarea"
-          placeholder="Write a comment..."
           className="max-h-[200px]"
           value={isProcessingImage ? '' : input}
           placeholder={isProcessingImage ? 'Extracting text from image...' : 'Write a comment...'}
