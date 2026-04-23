@@ -13,10 +13,13 @@ export function SummaryPage() {
   const deleteSummary = useSummary((state) => state.deleteSummary)
   const retrySummarization = useSummary((state) => state.retrySummarization)
   console.log(summary)
+
   if (summary?.processing) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-3">
-        <Card className="max-w-[500px] w-full rounded-sm p-3">{summary.promptText}</Card>
+        <Card className="max-w-[500px] w-full rounded-sm p-3 max-h-[200px] overflow-scroll">
+          {summary.promptText}
+        </Card>
         <Spinner />
         Processing...
       </div>
@@ -26,7 +29,9 @@ export function SummaryPage() {
   if (summary?.error || summary?.sentences?.length === 0) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-4">
-        <Card className="max-w-[500px] w-full rounded-sm p-3">{summary.promptText}</Card>
+        <Card className="max-w-[500px] w-full rounded-sm p-3 max-h-[200px] overflow-scroll">
+          {summary.promptText}
+        </Card>
         <p className="text-destructive font-medium">Failed to summarize</p>
         {!!summary.error && <p className="text-muted-foreground text-sm">{summary.error}</p>}
         <div className="flex gap-3">
