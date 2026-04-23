@@ -10,8 +10,9 @@ export function SummaryPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const summary = useSummary((state) => state.summaries.find((el) => el.id == id))
+  const deleteSummary = useSummary((state) => state.deleteSummary)
+  const retrySummarization = useSummary((state) => state.retrySummarization)
   console.log(summary)
-
   if (summary?.processing) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-3">
@@ -29,7 +30,12 @@ export function SummaryPage() {
         <p className="text-destructive font-medium">Failed to summarize</p>
         {!!summary.error && <p className="text-muted-foreground text-sm">{summary.error}</p>}
         <div className="flex gap-3">
-          <Button variant={'outline'} onClick={() => {}}>
+          <Button
+            variant={'outline'}
+            onClick={() => {
+              retrySummarization(summary.id)
+            }}
+          >
             <RotateCwIcon />
             Retry
           </Button>
@@ -37,6 +43,7 @@ export function SummaryPage() {
             variant={'destructive'}
             onClick={() => {
               navigate('/')
+              deleteSummary(summary.id)
             }}
           >
             <TrashIcon />

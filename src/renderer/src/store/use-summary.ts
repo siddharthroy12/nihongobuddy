@@ -8,6 +8,7 @@ export type SummaryState = {
 
 export type SummaryActions = {
   startSummarization: (text: string) => Summary
+  retrySummarization: (id: string) => void
   updateSummary: (id: string, summary: Partial<Summary>) => void
   saveSummaries: () => void
   loadSummaries: () => void
@@ -33,6 +34,28 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
       summaries: state.summaries.map((s) => (s.id === id ? { ...s, starred: !s.starred } : s))
     }))
     get().saveSummaries()
+  },
+  retrySummarization(id) {
+    const summary = get().summaries.find((s) => s.id === id)
+    if (!summary || summary.processing) return
+
+    get().updateSummary(id, { processing: true, error: '', sentences: [] })
+    ;(async () => {
+      try {
+        const result = await generateSummary(summary.promptText)
+        get().updateSummary(id, {
+          processing: false,
+          sentences: result?.sentences ?? []
+        })
+        get().saveSummaries()
+      } catch (e) {
+        get().updateSummary(id, {
+          processing: false,
+          error: e + ''
+        })
+        throw e
+      }
+    })()
   },
   startSummarization(text) {
     const newSummary: Summary = {

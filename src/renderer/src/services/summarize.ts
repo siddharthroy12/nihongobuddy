@@ -1,5 +1,4 @@
-import { runPromptWithJSONReponse } from "../lib/electron-api";
-import { GrammerPoint, Word } from "../types";
+import { runPromptWithJSONReponse } from '../lib/electron-api'
 
 function createPromptForSplitSentence(text: string) {
   return `
@@ -17,12 +16,12 @@ Example Output:
 ]
 
 In your output only an array should be present.
-`;
+`
 }
 
 export async function splitSentences(text: string): Promise<string[]> {
-  const prompt = createPromptForSplitSentence(text);
-  return await runPromptWithJSONReponse(prompt);
+  const prompt = createPromptForSplitSentence(text)
+  return await runPromptWithJSONReponse(prompt)
 }
 
 function createPromptForGeneratingSummary(text: string) {
@@ -75,10 +74,10 @@ Example Output:
 }
 
 Return ONLY the JSON object. No extra text, no markdown, no backticks.
-`;
+`
 }
 
 export async function generateSummary(text: string) {
-  const prompt = createPromptForGeneratingSummary(text);
-  return await runPromptWithJSONReponse(prompt);
+  const prompt = createPromptForGeneratingSummary(text)
+  return await runPromptWithJSONReponse(prompt)
 }

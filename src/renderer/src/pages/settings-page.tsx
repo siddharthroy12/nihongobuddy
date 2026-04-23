@@ -8,7 +8,6 @@ import {
 } from '@renderer/components/ui/field'
 import { Input } from '@renderer/components/ui/input'
 
-import React from 'react'
 import { useSettings } from '../store/use-settings'
 import { useDebounceEffect } from '../hooks/use-debounce'
 import { LLMTestButton } from '../components/llm-test-button'
