@@ -4,7 +4,7 @@ import { Spinner } from '../components/ui/spinner'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { ColoredWords } from '../components/colored-words'
 import { Button } from '@renderer/components/ui/button'
-import { BanIcon, RotateCwIcon, ScanText, TrashIcon } from 'lucide-react'
+import { BanIcon, RotateCwIcon, TrashIcon } from 'lucide-react'
 import {
   Item,
   ItemContent,
@@ -14,13 +14,23 @@ import {
 } from '@renderer/components/ui/item'
 import { Summary } from '@renderer/types'
 
-function InputPreview({ prompt, processing }: { prompt: string; processing?: boolean }) {
+function InputPreview({
+  prompt,
+  processing,
+  image
+}: {
+  prompt: string
+  processing?: boolean
+  image: string
+}) {
   return (
     <Item variant="outline">
       <ItemMedia variant="icon">{processing ? <Spinner /> : <BanIcon />}</ItemMedia>
       <ItemContent>
         <ItemTitle>{processing ? 'Processing' : 'Failed to process'}</ItemTitle>
-        <ItemDescription>{prompt}</ItemDescription>
+        <ItemDescription>
+          {image ? <img src={image} className="block w-[200px] rounded-sm" /> : prompt}
+        </ItemDescription>
       </ItemContent>
     </Item>
   )
@@ -63,7 +73,7 @@ export function SummaryPage() {
   if (summary?.processing) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-3">
-        <InputPreview prompt={summary.promptText} processing />
+        <InputPreview prompt={summary.promptText} image={summary.promptImageUrl} processing />
       </div>
     )
   }
@@ -71,7 +81,7 @@ export function SummaryPage() {
   if (summary?.error || summary?.sentences?.length === 0) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-4">
-        <InputPreview prompt={summary.promptText} />
+        <InputPreview prompt={summary.promptText} image={summary.promptImageUrl} />
         {!!summary.error && <p className="text-muted-foreground text-sm">{summary.error}</p>}
         <div className="flex gap-3">
           <Button

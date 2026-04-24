@@ -6,6 +6,7 @@ const api: any = {}
 
 const handlers = [
   'runPrompt',
+  'runPromptWithImage',
   'setSettings',
   'getSettings',
   'setSummaries',

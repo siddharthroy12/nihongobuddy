@@ -1,4 +1,4 @@
-import { runPromptWithJSONReponse } from '../lib/electron-api'
+import { runPromptWithImageJSONReponse, runPromptWithJSONReponse } from '../lib/electron-api'
 
 function createPromptForSplitSentence(text: string) {
   return `
@@ -24,13 +24,19 @@ export async function splitSentences(text: string): Promise<string[]> {
   return await runPromptWithJSONReponse(prompt)
 }
 
-function createPromptForGeneratingSummary(text: string) {
+function createPromptForGeneratingSummary(text: string, forImage = false) {
   return `
-YOU ARE A JAPANESE LANGUAGE ANALYSIS MACHINE. YOUR ONLY JOB IS TO ANALYZE THE GIVEN TEXT AND RETURN A SINGLE JSON OBJECT.
+YOU ARE A JAPANESE LANGUAGE ANALYSIS MACHINE. YOUR ONLY JOB IS TO ANALYZE THE GIVEN ${forImage ? 'IMAGE' : 'TEXT'} AND RETURN A SINGLE JSON OBJECT.
 
+${
+  forImage
+    ? ''
+    : `
 ==== TEXT BEGIN ====
 ${text}
 ==== TEXT END ====
+`
+}
 
 You must:
 1. Split the text into individual Japanese sentences/phrases
@@ -80,4 +86,9 @@ Return ONLY the JSON object. No extra text, no markdown, no backticks.
 export async function generateSummary(text: string) {
   const prompt = createPromptForGeneratingSummary(text)
   return await runPromptWithJSONReponse(prompt)
+}
+
+export async function generateSummaryFromImage(image: string) {
+  const prompt = createPromptForGeneratingSummary('', true)
+  return await runPromptWithImageJSONReponse(prompt, image)
 }

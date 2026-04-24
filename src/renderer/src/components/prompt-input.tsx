@@ -6,15 +6,16 @@ import {
   InputGroupButton,
   InputGroupTextarea
 } from '@renderer/components/ui/input-group'
-import { ArrowUpIcon, ImageIcon, Loader2Icon } from 'lucide-react'
+import { ArrowUpIcon, ImageIcon } from 'lucide-react'
 import { useSummary } from '../store/use-summary'
 import { useNavigate } from 'react-router'
-import { extractTextFromImage } from '@renderer/lib/ocr'
+import { fileToBase64URL } from '@renderer/lib/file'
 
 export function PromptInput() {
   const startSummarization = useSummary((state) => state.startSummarization)
+  const startSummarizationFromImage = useSummary((state) => state.startSummarizationFromImage)
+
   const [input, setInput] = useState<string>('')
-  const [isProcessingImage, setIsProcessingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   let navigate = useNavigate()
 
@@ -25,20 +26,15 @@ export function PromptInput() {
   async function onImageFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-
-    setIsProcessingImage(true)
-    try {
-      const extractedText = await extractTextFromImage(file)
-      setInput(extractedText)
-    } finally {
-      setIsProcessingImage(false)
-      e.target.value = ''
-    }
+    await startSummarizationFromImage(await fileToBase64URL(file), (id) => {
+      navigate(`/summary/${id}`)
+    })
   }
 
   async function onSubmit() {
-    const summary = await startSummarization(input)
-    navigate(`/summary/${summary!.id}`)
+    startSummarization(input, (id) => {
+      navigate(`/summary/${id}`)
+    })
   }
 
   return (
@@ -59,38 +55,23 @@ export function PromptInput() {
         <InputGroupTextarea
           id="block-end-textarea"
           className="max-h-[200px]"
-          value={isProcessingImage ? '' : input}
-          placeholder={isProcessingImage ? 'Extracting text from image...' : 'Write a comment...'}
-          disabled={isProcessingImage}
+          value={input}
+          placeholder={'Write or paste a text'}
           onChange={(e) => {
             setInput(e.target.value)
           }}
         />
         <InputGroupAddon align="block-end">
-          <InputGroupButton
-            variant="outline"
-            size="sm"
-            onClick={onClickUploadImage}
-            disabled={isProcessingImage}
-          >
-            {isProcessingImage ? (
-              <>
-                <Loader2Icon className="animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <ImageIcon />
-                Scan Image
-              </>
-            )}
+          <InputGroupButton variant="outline" size="sm" onClick={onClickUploadImage}>
+            <ImageIcon />
+            Scan Image
           </InputGroupButton>
           <InputGroupButton
             variant="default"
             size="icon-sm"
             className="ml-auto"
             onClick={onSubmit}
-            disabled={isProcessingImage || input.trim() === ''}
+            disabled={input.trim() === ''}
           >
             <ArrowUpIcon />
           </InputGroupButton>

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { generateSummary } from '../services/summarize'
+import { generateSummary, generateSummaryFromImage } from '../services/summarize'
 import { Summary } from '../types'
 
 export type SummaryState = {
@@ -7,7 +7,11 @@ export type SummaryState = {
 }
 
 export type SummaryActions = {
-  startSummarization: (text: string) => Promise<Summary | undefined>
+  startSummarization: (text: string, onStart?: (id: string) => void) => Promise<Summary | undefined>
+  startSummarizationFromImage: (
+    text: string,
+    onStart?: (id: string) => void
+  ) => Promise<Summary | undefined>
   retrySummarization: (id: string) => Promise<Summary | undefined>
   getSummary: (id: string) => Summary | undefined
   updateSummary: (id: string, summary: Partial<Summary>) => void
@@ -49,7 +53,12 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
 
     get().updateSummary(id, { processing: true, error: '', sentences: [] })
     try {
-      const result = await generateSummary(summary.promptText)
+      let result: any
+      if (summary.promptImageUrl) {
+        result = await generateSummaryFromImage(summary.promptImageUrl)
+      } else {
+        result = await generateSummary(summary.promptText)
+      }
       get().updateSummary(id, {
         processing: false,
         sentences: result?.sentences ?? []
@@ -65,7 +74,39 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
 
     return get().getSummary(id)
   },
-  async startSummarization(text) {
+  async startSummarizationFromImage(image, onStart) {
+    const newSummary: Summary = {
+      id: crypto.randomUUID(),
+      promptText: 'Image',
+      promptImageUrl: image,
+      processing: true,
+      error: '',
+      sentences: [],
+      starred: false
+    }
+    if (onStart) {
+      onStart(newSummary.id)
+    }
+    set((state) => ({
+      summaries: [...state.summaries, newSummary]
+    }))
+    try {
+      const summary = await generateSummaryFromImage(image)
+      get().updateSummary(newSummary.id, {
+        processing: false,
+        sentences: summary?.sentences ?? []
+      })
+      get().saveSummaries()
+    } catch (e) {
+      get().updateSummary(newSummary.id, {
+        processing: false,
+        error: e + ''
+      })
+      throw e
+    }
+    return get().getSummary(newSummary.id)
+  },
+  async startSummarization(text, onStart) {
     const newSummary: Summary = {
       id: crypto.randomUUID(),
       promptText: text,
@@ -74,6 +115,9 @@ export const useSummary = create<SummaryState & SummaryActions>()((set, get) => 
       error: '',
       sentences: [],
       starred: false
+    }
+    if (onStart) {
+      onStart(newSummary.id)
     }
     set((state) => ({
       summaries: [...state.summaries, newSummary]
