@@ -32,3 +32,14 @@ $ npm run build:mac
 # For Linux
 $ npm run build:linux
 ```
+
+TODO:
+
+- Show processed text in sidebar
+- Add zod validation for LLM response.
+- Show proper error in overlay mode.
+- Add dictionary.
+- Add anki integration
+- Add app icon
+- Publish binaries
+- Add proper readme

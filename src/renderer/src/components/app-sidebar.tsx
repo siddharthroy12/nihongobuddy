@@ -28,6 +28,7 @@ import {
 import { useSummary } from '../store/use-summary'
 import { Link, useLocation } from 'react-router'
 import { Summary } from '@renderer/types'
+import { useEffect } from 'react'
 
 type NavigationItem = {
   title?: string
@@ -108,6 +109,16 @@ function SummaryListItem(summary: Summary) {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [isScrolled, setIsScrolled] = React.useState(false)
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const handler = () => setIsScrolled(el.scrollTop > 0)
+    el.addEventListener('scroll', handler)
+    return () => el.removeEventListener('scroll', handler)
+  }, [])
+
   const location = useLocation()
 
   const summaries = useSummary((state) => state.summaries.length)
@@ -119,10 +130,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="titlebar">
         <div className="h-6"></div>
       </SidebarHeader>
-      <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
+      <SidebarContent className="relative" ref={scrollRef}>
         {navigation.groups.map((item) => (
-          <SidebarGroup key={item.title}>
+          <SidebarGroup
+            key={item.title}
+            className={`sticky top-0 bg-sidebar z-10 ${isScrolled ? 'border-b' : ''}`}
+          >
             {!!item.title && <SidebarGroupLabel>{item.title}</SidebarGroupLabel>}
             <SidebarGroupContent>
               <SidebarMenu>
@@ -142,27 +155,29 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
-        {summaries > 0 && (
-          <>
-            {starredSummaries > 0 && (
+        <div className="z-0">
+          {summaries > 0 && (
+            <>
+              {starredSummaries > 0 && (
+                <SidebarGroup>
+                  <SidebarGroupLabel>Starred</SidebarGroupLabel>
+                  {useSummary
+                    .getState()
+                    .summaries.filter((summary) => summary.starred)
+                    .map((summary) => (
+                      <SummaryListItem key={summary.id} {...summary} />
+                    ))}
+                </SidebarGroup>
+              )}
               <SidebarGroup>
-                <SidebarGroupLabel>Starred</SidebarGroupLabel>
-                {useSummary
-                  .getState()
-                  .summaries.filter((summary) => summary.starred)
-                  .map((summary) => (
-                    <SummaryListItem key={summary.id} {...summary} />
-                  ))}
+                <SidebarGroupLabel>Recent</SidebarGroupLabel>
+                {useSummary.getState().summaries.map((summary) => (
+                  <SummaryListItem key={summary.id} {...summary} />
+                ))}
               </SidebarGroup>
-            )}
-            <SidebarGroup>
-              <SidebarGroupLabel>Recent</SidebarGroupLabel>
-              {useSummary.getState().summaries.map((summary) => (
-                <SummaryListItem key={summary.id} {...summary} />
-              ))}
-            </SidebarGroup>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </SidebarContent>
     </Sidebar>
   )
