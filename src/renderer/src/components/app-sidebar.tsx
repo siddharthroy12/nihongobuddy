@@ -80,11 +80,15 @@ function SummaryListItem(summary: Summary) {
 
   const startSummary = useSummary((state) => state.starSummary)
   const deleteSummary = useSummary((state) => state.deleteSummary)
+  let preview = summary?.sentences?.map((sentence) => sentence.sentence).join(' ')
+  if (!preview) {
+    preview = summary.promptText
+  }
   return (
     <SidebarMenuItem key={summary.id}>
       <SidebarMenuButton asChild isActive={location.pathname === `/summary/${summary.id}`}>
         <Link to={`/summary/${summary.id}`} className="flex justify-between items-center w-full">
-          <span className="truncate">{summary.promptText}</span>
+          <span className="truncate">{preview}</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button onClick={(e) => e.preventDefault()}>

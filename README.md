@@ -35,11 +35,12 @@ $ npm run build:linux
 
 TODO:
 
-- Show processed text in sidebar
+- Fix list not being up to date bug
 - Add zod validation for LLM response.
 - Show proper error in overlay mode.
+- Add app icon
+- Add proper readme 
+- Publish binaries
+
 - Add dictionary.
 - Add anki integration
-- Add app icon
-- Publish binaries
-- Add proper readme

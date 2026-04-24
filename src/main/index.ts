@@ -5,9 +5,11 @@ import icon from '../../resources/icon.png?asset'
 import { loadHandlers } from './ipc-handler'
 import { registerShortcuts } from './services/shortcut'
 
+let mainWindow: BrowserWindow | null = null
+
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     title: 'Japanese Buddy',
     width: 900,
     height: 670,
@@ -23,7 +25,7 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow!.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -64,7 +66,9 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (mainWindow!.isDestroyed()) {
+      createWindow()
+    }
   })
 })
 
