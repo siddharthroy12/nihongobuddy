@@ -25,10 +25,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@renderer/components/ui/dropdown-menu'
-import { useSummary } from '../store/use-summary'
 import { Link, useLocation } from 'react-router'
-import { Summary } from '@renderer/types'
+import { Summary } from '../../../common/types'
 import { useEffect } from 'react'
+import { useGetAllSummaries } from '@renderer/queries/summary'
 
 type NavigationItem = {
   title?: string
@@ -78,8 +78,6 @@ const navigation: Navigation = {
 function SummaryListItem(summary: Summary) {
   const location = useLocation()
 
-  const startSummary = useSummary((state) => state.starSummary)
-  const deleteSummary = useSummary((state) => state.deleteSummary)
   let preview = summary?.sentences?.map((sentence) => sentence.sentence).join(' ')
   if (!preview) {
     preview = summary.promptText
@@ -96,11 +94,14 @@ function SummaryListItem(summary: Summary) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem variant="destructive" onClick={() => deleteSummary(summary.id)}>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => window.api.deleteSummary(summary.id)}
+              >
                 <TrashIcon />
                 Delete
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => startSummary(summary.id)}>
+              <DropdownMenuItem onClick={() => window.api.starSummary(summary.id)}>
                 <StarIcon fill={summary.starred ? 'white' : 'unset'} />
                 {summary.starred ? 'Unstar' : 'Star'}
               </DropdownMenuItem>
@@ -125,10 +126,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const location = useLocation()
 
-  const summaries = useSummary((state) => state.summaries.length)
-  const starredSummaries = useSummary(
-    (state) => state.summaries.filter((summary) => summary.starred).length
-  )
+  const { data: summaries } = useGetAllSummaries()
+
+  const starredSummaries = summaries?.filter((summary) => summary.starred)
   return (
     <Sidebar {...props}>
       <SidebarHeader className="titlebar">
@@ -160,14 +160,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
         <div className="z-0">
-          {summaries > 0 && (
+          {(summaries?.length ?? 0) > 0 && (
             <>
-              {starredSummaries > 0 && (
+              {(starredSummaries?.length ?? 0) > 0 && (
                 <SidebarGroup>
                   <SidebarGroupLabel>Starred</SidebarGroupLabel>
-                  {useSummary
-                    .getState()
-                    .summaries.filter((summary) => summary.starred)
+                  {starredSummaries
+                    ?.filter((summary) => summary.starred)
                     .map((summary) => (
                       <SummaryListItem key={summary.id} {...summary} />
                     ))}
@@ -175,9 +174,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               )}
               <SidebarGroup>
                 <SidebarGroupLabel>Recent</SidebarGroupLabel>
-                {useSummary.getState().summaries.map((summary) => (
-                  <SummaryListItem key={summary.id} {...summary} />
-                ))}
+                {summaries
+                  ?.filter((summary) => !summary.starred)
+                  .map((summary) => (
+                    <SummaryListItem key={summary.id} {...summary} />
+                  ))}
               </SidebarGroup>
             </>
           )}

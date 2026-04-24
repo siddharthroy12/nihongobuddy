@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button } from './ui/button'
 import { Spinner } from './ui/spinner'
-import { runPrompt } from '../lib/electron-api'
 import { toast } from 'sonner'
 import { RocketIcon } from 'lucide-react'
 
@@ -10,16 +9,13 @@ export function LLMTestButton() {
 
   async function startTest() {
     setIsTesting(true)
-    try {
-      const res = await runPrompt('hello')
-      if (res) {
-        toast.success('LLM is working')
-      } else {
-        throw Error()
-      }
-    } catch {
+    const res = await window.api.testConnection()
+    if (res) {
+      toast.success('LLM is working')
+    } else {
       toast.error('LLM connection failed')
     }
+
     setIsTesting(false)
   }
 

@@ -8,7 +8,6 @@ import {
 } from '@renderer/components/ui/field'
 import { Input } from '@renderer/components/ui/input'
 
-import { useSettings } from '../store/use-settings'
 import { useDebounceEffect } from '../hooks/use-debounce'
 import { LLMTestButton } from '../components/llm-test-button'
 import { useState, useEffect, useRef } from 'react'
@@ -53,8 +52,6 @@ function ShortcutRecorder({
       const normalized = keyAliases[key] ?? (key.length === 1 ? key.toUpperCase() : key)
       parts.push(normalized)
     }
-
-    console.log(parts.join('+').replace(' ', 'Space'))
 
     return parts.join('+').replace(' ', 'Space')
   }
@@ -143,13 +140,33 @@ function ShortcutRecorder({
 }
 
 export function SettingsPage() {
-  const settings = useSettings()
-  const saveSettings = useSettings((state) => state.saveSettings)
+  const [apiUrl, setApiUrl] = useState('')
+  const [apiKey, setAPIKey] = useState('')
+  const [llmModel, setLlmModel] = useState('')
+  const [quickSummaryShortcut, setQuickSummaryShortcut] = useState('')
   const [showApiKey, setShowApiKey] = useState(false)
-
+  useEffect(() => {
+    async function effect() {
+      const settings = await window.api.getSettings()
+      setApiUrl(settings.llm.llmBaseUrl)
+      setAPIKey(settings.llm.llmApiKey)
+      setLlmModel(settings.llm.llmModel)
+      setQuickSummaryShortcut(settings.shortcut.quicksummary)
+    }
+    effect()
+  }, [])
   useDebounceEffect(() => {
-    saveSettings()
-  }, [settings])
+    window.api.setSettings({
+      llm: {
+        llmBaseUrl: apiUrl,
+        llmApiKey: apiKey,
+        llmModel: llmModel
+      },
+      shortcut: {
+        quicksummary: quickSummaryShortcut
+      }
+    })
+  }, [apiUrl, apiKey, llmModel, quickSummaryShortcut])
 
   return (
     <div className="w-full">
@@ -164,14 +181,9 @@ export function SettingsPage() {
                 <FieldLabel>API URL</FieldLabel>
                 <Input
                   placeholder="https://generativelanguage.googleapis.com/v1beta/openai/"
-                  value={settings.llm.llmBaseUrl}
+                  value={apiUrl}
                   onChange={(e) => {
-                    useSettings.setState({
-                      llm: {
-                        ...useSettings.getState().llm,
-                        llmBaseUrl: e.target.value
-                      }
-                    })
+                    setApiUrl(e.target.value)
                   }}
                 />
               </Field>
@@ -181,14 +193,9 @@ export function SettingsPage() {
                   <Input
                     placeholder="AIzaSasdfYlasdfsadffUsdfCsLt-Aec"
                     type={showApiKey ? 'text' : 'password'}
-                    value={settings.llm.llmApiKey}
+                    value={apiKey}
                     onChange={(e) => {
-                      useSettings.setState({
-                        llm: {
-                          ...useSettings.getState().llm,
-                          llmApiKey: e.target.value
-                        }
-                      })
+                      setAPIKey(e.target.value)
                     }}
                     className="pr-10"
                   />
@@ -206,14 +213,9 @@ export function SettingsPage() {
                 <FieldLabel>Model</FieldLabel>
                 <Input
                   placeholder="google/gemma-4"
-                  value={settings.llm.llmModel}
+                  value={llmModel}
                   onChange={(e) => {
-                    useSettings.setState({
-                      llm: {
-                        ...useSettings.getState().llm,
-                        llmModel: e.target.value
-                      }
-                    })
+                    setLlmModel(e.target.value)
                   }}
                 />
               </Field>
@@ -232,14 +234,9 @@ export function SettingsPage() {
             <FieldGroup>
               <Field>
                 <ShortcutRecorder
-                  value={settings.shortcut?.quicksummary ?? ''}
+                  value={quickSummaryShortcut}
                   onChange={(shortcut) => {
-                    useSettings.setState({
-                      shortcut: {
-                        ...useSettings.getState().shortcut,
-                        quicksummary: shortcut
-                      }
-                    })
+                    setQuickSummaryShortcut(shortcut)
                   }}
                 />
               </Field>

@@ -35,7 +35,7 @@ $ npm run build:linux
 
 TODO:
 
-- Fix list not being up to date bug
+- Fix overlay
 - Add zod validation for LLM response.
 - Show proper error in overlay mode.
 - Add app icon

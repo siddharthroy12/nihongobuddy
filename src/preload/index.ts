@@ -5,13 +5,19 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api: any = {}
 
 const handlers = [
-  'runPrompt',
-  'runPromptWithImage',
+  // Settings
   'setSettings',
   'getSettings',
-  'setSummaries',
-  'getSummaries',
-  'registerShortcuts',
+  'testConnection',
+  // Sumaries
+  'getAllSummaries',
+  'getSummaryById',
+  'startSummarization',
+  'startSummarizationFromImage',
+  'retrySummarization',
+  'deleteSummary',
+  'starSummary',
+  // Overlay
   'closeOverlayWindow'
 ]
 
@@ -19,8 +25,11 @@ handlers.forEach((key) => {
   api[key] = (data: any) => ipcRenderer.invoke(key, data)
 })
 
-api.onScreenshot = (cb: (dataUrl: string) => void) =>
-  ipcRenderer.on('screenshot-data', (_, dataUrl) => cb(dataUrl))
+const callbacks = ['onScreenshot', 'onSummaryUpdate']
+
+callbacks.forEach((key) => {
+  api[key] = (cb: (payload: any) => void) => ipcRenderer.on(key, (_, data) => cb(data))
+})
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

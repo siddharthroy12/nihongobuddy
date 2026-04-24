@@ -1,4 +1,3 @@
-import { useSummary } from '../store/use-summary'
 import { useParams, useNavigate } from 'react-router'
 import { Spinner } from '../components/ui/spinner'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
@@ -12,7 +11,8 @@ import {
   ItemMedia,
   ItemTitle
 } from '@renderer/components/ui/item'
-import { Summary } from '@renderer/types'
+import { Summary } from 'src/common/types'
+import { useGetSummaryById } from '@renderer/queries/summary'
 
 function InputPreview({
   prompt,
@@ -39,36 +39,31 @@ function InputPreview({
 export function SummaryComp(summary: Summary) {
   return (
     <div className="flex flex-col gap-5">
-      {summary?.sentences
-        ?.filter((sentence) => sentence?.words?.length > 0)
-        ?.map((sentence) => (
-          <Card size="sm" className="rounded-md">
-            <CardHeader>
-              <ColoredWords words={sentence.words} />
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <blockquote className="border-l-2 pl-6 italic">{sentence.translation}</blockquote>
-              <ul className="ml-6 list-disc [&>li]:mt-2">
-                {sentence?.grammarpoints?.map((point) => (
-                  <li>
-                    {point.point}: {point.explanation}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        ))}
+      {summary?.sentences?.map((sentence, index) => (
+        <Card size="sm" className="rounded-md" key={index}>
+          <CardHeader>
+            <ColoredWords words={sentence.words} />
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            <blockquote className="border-l-2 pl-6 italic">{sentence.translation}</blockquote>
+            <ul className="ml-6 list-disc [&>li]:mt-2">
+              {sentence?.grammarpoints?.map((point) => (
+                <li>
+                  {point.point}: {point.explanation}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   )
 }
 
 export function SummaryPage() {
   const { id } = useParams()
+  const { data: summary } = useGetSummaryById(id!)
   const navigate = useNavigate()
-  const summary = useSummary((state) => state.summaries.find((el) => el.id == id))
-  const deleteSummary = useSummary((state) => state.deleteSummary)
-  const retrySummarization = useSummary((state) => state.retrySummarization)
-  console.log(summary)
 
   if (summary?.processing) {
     return (
@@ -87,7 +82,7 @@ export function SummaryPage() {
           <Button
             variant={'outline'}
             onClick={() => {
-              retrySummarization(summary.id)
+              window.api.retrySummarization(summary.id)
             }}
           >
             <RotateCwIcon />
@@ -97,7 +92,7 @@ export function SummaryPage() {
             variant={'destructive'}
             onClick={() => {
               navigate('/')
-              deleteSummary(summary.id)
+              window.api.deleteSummary(summary.id)
             }}
           >
             <TrashIcon />

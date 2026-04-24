@@ -3,6 +3,7 @@ import { AppSidebar } from '@renderer/components/app-sidebar'
 import { Outlet, useLocation } from 'react-router'
 import { TooltipProvider } from '@renderer/components/ui/tooltip'
 import { ReactNode } from 'react'
+import { useInstallSummaryInvalidation } from './queries/summary'
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -16,6 +17,8 @@ export function Providers({ children }: { children: ReactNode }) {
 
 export default function Layout() {
   const location = useLocation()
+  useInstallSummaryInvalidation()
+
   if (location.pathname.includes('overlay')) {
     return (
       <Providers>

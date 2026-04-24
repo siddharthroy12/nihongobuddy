@@ -1,4 +1,4 @@
-import { runPromptWithImageJSONReponse, runPromptWithJSONReponse } from '../lib/electron-api'
+import { runPromptWithImageJSONReponse, runPromptWithJSONReponse } from './llm'
 
 function createPromptForSplitSentence(text: string) {
   return `

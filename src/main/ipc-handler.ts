@@ -1,17 +1,31 @@
 import { ipcMain } from 'electron'
-import { runPrompt, runPromptWithImage } from './services/llm'
-import { settings, summaries } from './services/store'
-import { closeOverlayWindow, registerShortcuts } from './services/shortcut'
+import { closeOverlayWindow } from './services/shortcut'
+import { getSettings, setSettings, testConnection } from './services/settings'
+import {
+  deleteSummary,
+  getAllSummaries,
+  getSummaryById,
+  retrySummarization,
+  starSummary,
+  startSummarization,
+  startSummarizationFromImage
+} from './services/summaries'
 
 const handlers: { [key: string]: (a: any) => any } = {
-  runPrompt: runPrompt,
-  runPromptWithImage,
-  setSettings: settings.set,
-  getSettings: settings.get,
-  setSummaries: summaries.set,
-  getSummaries: summaries.get,
-  registerShortcuts: registerShortcuts,
-  closeOverlayWindow: closeOverlayWindow
+  // Settings
+  setSettings,
+  getSettings,
+  testConnection,
+  // Sumaries
+  getAllSummaries,
+  getSummaryById,
+  startSummarization,
+  startSummarizationFromImage,
+  retrySummarization,
+  deleteSummary,
+  starSummary,
+  // Overlay
+  closeOverlayWindow
 }
 
 export function loadHandlers() {

@@ -1,8 +1,8 @@
 import { BrowserWindow, globalShortcut, screen } from 'electron'
-import { settings } from './store'
 import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
 import { takeScreenshot } from './screenshot'
+import { getSettings } from './settings'
 
 let overlayWindow: BrowserWindow | null = null
 
@@ -41,7 +41,7 @@ function openOverlayWindow(screenshotDataUrl: string) {
   }
 
   overlayWindow.webContents.once('did-finish-load', () => {
-    overlayWindow?.webContents.send('screenshot-data', screenshotDataUrl)
+    overlayWindow?.webContents.send('onScreenshot', screenshotDataUrl)
   })
 }
 
@@ -51,10 +51,9 @@ async function quickSummaryShortcut() {
 }
 
 export function registerShortcuts() {
-  // Unregister all first to avoid duplicates
   globalShortcut.unregisterAll()
 
-  const s = JSON.parse(settings.get())
+  const s = getSettings()
 
   if (s.shortcut.quicksummary) {
     try {

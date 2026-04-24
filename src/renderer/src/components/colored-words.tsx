@@ -1,5 +1,4 @@
-import React from 'react'
-import { Word } from '../types'
+import { Word } from 'src/common/types'
 import { getColorForWordType } from '../lib/word-color'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip'
 

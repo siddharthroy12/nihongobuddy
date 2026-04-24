@@ -1,20 +1,20 @@
-import Store from "electron-store";
+import Store from 'electron-store'
 
 const KEYS = {
-  SETTINGS: "SETTINGS",
-  SUMMARIES: "SUMMARIES",
-} as const;
+  SETTINGS: 'SETTINGS',
+  SUMMARIES: 'SUMMARIES'
+} as const
 
-const store = new Store();
+const store = new Store()
 
-type StoreKey = keyof typeof KEYS;
+type StoreKey = keyof typeof KEYS
 
 function createAccessors(key: StoreKey) {
   return {
     get: () => store.get(KEYS[key]) as any,
-    set: (value: any) => store.set(KEYS[key], value),
-  };
+    set: (value: any) => store.set(KEYS[key], value)
+  }
 }
 
-export const settings = createAccessors(KEYS.SETTINGS);
-export const summaries = createAccessors(KEYS.SUMMARIES);
+export const settingsStore = createAccessors(KEYS.SETTINGS)
+export const summariesStore = createAccessors(KEYS.SUMMARIES)

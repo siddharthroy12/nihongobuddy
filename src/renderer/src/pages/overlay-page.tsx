@@ -1,27 +1,26 @@
 import { Button } from '@renderer/components/ui/button'
 import { Spinner } from '@renderer/components/ui/spinner'
-import { useSummary } from '@renderer/store/use-summary'
-import { Summary } from '@renderer/types'
 import { CircleXIcon } from 'lucide-react'
 import { SummaryComp } from './summary-page'
 import { useEffect, useState } from 'react'
+import { Summary } from 'src/common/types'
 
 function OverlaySummary({ image }: { image: string }) {
   const [isLoading, setIsLoading] = useState(false)
   const [summary, setSummary] = useState<Summary | undefined>()
-  const startSummarizationFromImage = useSummary((state) => state.startSummarizationFromImage)
 
   useEffect(() => {
+    setIsLoading(true)
     async function effect() {
-      setIsLoading(true)
       try {
         if (image) {
-          const s = await startSummarizationFromImage(image)
-          setSummary(s)
+          const id = await window.api.startSummarizationFromImage(image)
+          window.api.onSummaryUpdate(async () => {
+            setSummary(await window.api.getSummaryById(id))
+            setIsLoading(false)
+          })
         }
       } catch {}
-
-      setIsLoading(false)
     }
     effect()
   }, [image])

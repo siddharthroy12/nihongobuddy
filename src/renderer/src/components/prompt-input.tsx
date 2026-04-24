@@ -7,14 +7,10 @@ import {
   InputGroupTextarea
 } from '@renderer/components/ui/input-group'
 import { ArrowUpIcon, ImageIcon } from 'lucide-react'
-import { useSummary } from '../store/use-summary'
 import { useNavigate } from 'react-router'
 import { fileToBase64URL } from '@renderer/lib/file'
 
 export function PromptInput() {
-  const startSummarization = useSummary((state) => state.startSummarization)
-  const startSummarizationFromImage = useSummary((state) => state.startSummarizationFromImage)
-
   const [input, setInput] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   let navigate = useNavigate()
@@ -26,15 +22,13 @@ export function PromptInput() {
   async function onImageFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    await startSummarizationFromImage(await fileToBase64URL(file), (id) => {
-      navigate(`/summary/${id}`)
-    })
+    const id = await window.api.startSummarizationFromImage(await fileToBase64URL(file))
+    navigate(`/summary/${id}`)
   }
 
   async function onSubmit() {
-    startSummarization(input, (id) => {
-      navigate(`/summary/${id}`)
-    })
+    const id = await window.api.startSummarization(input)
+    navigate(`/summary/${id}`)
   }
 
   return (
