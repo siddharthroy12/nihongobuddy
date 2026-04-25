@@ -131,9 +131,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const starredSummaries = summaries?.filter((summary) => summary.starred)
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="titlebar">
-        <div className="h-6"></div>
-      </SidebarHeader>
+      {window.electron.process.platform === 'darwin' && (
+        <SidebarHeader className="titlebar">
+          <div className="h-6"></div>
+        </SidebarHeader>
+      )}
       <SidebarContent className="relative" ref={scrollRef}>
         {navigation.groups.map((item) => (
           <SidebarGroup

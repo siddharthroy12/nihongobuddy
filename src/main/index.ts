@@ -7,6 +7,9 @@ import { registerShortcuts } from './services/shortcut'
 
 let mainWindow: BrowserWindow | null = null
 
+// Allow simulating other platforms for testing, e.g. SIMULATE_PLATFORM=win32 npm run dev
+const platform = (process.env['SIMULATE_PLATFORM'] ?? process.platform) as NodeJS.Platform
+
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -15,9 +18,10 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
-    frame: false, // removes native titlebar/frame
-    titleBarStyle: 'hiddenInset', // insets traffic lights into your content
-    ...(process.platform === 'linux' ? { icon } : {}),
+    // On macOS use frameless/hiddenInset style; on Windows and Linux use native frame/border
+    frame: platform !== 'darwin',
+    ...(platform === 'darwin' ? { titleBarStyle: 'hiddenInset' } : {}),
+    ...(platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false

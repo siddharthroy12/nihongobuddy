@@ -2,7 +2,10 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api: any = {}
+const api: any = {
+  // Allow platform simulation for testing: SIMULATE_PLATFORM=win32 npm run dev
+  platform: process.env['SIMULATE_PLATFORM'] ?? process.platform
+}
 
 const handlers = [
   // Settings
