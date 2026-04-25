@@ -41,6 +41,8 @@ https://github.com/siddharthroy12/nihongobuddy/issues
 
 ## Roadmap
 
+- Fix github action mac build
+- Fix shotcut key recorder
 - Add dictionary.
 - Add in-app usage instructions.
 - Add Anki integration.
