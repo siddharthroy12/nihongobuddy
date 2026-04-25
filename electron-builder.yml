@@ -32,8 +32,10 @@ dmg:
 linux:
   target:
     - AppImage
-    - snap
     - deb
+    - rpm
+    - snap
+    - flatpak
   maintainer: siddharthroy.com
   category: Utility
 appImage:
