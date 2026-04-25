@@ -34,8 +34,7 @@ linux:
     - AppImage
     - deb
     - rpm
-    - snap
-    - flatpak
+    - pacman
   maintainer: siddharthroy.com
   category: Utility
 appImage:
