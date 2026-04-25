@@ -30,7 +30,7 @@ export default function Layout() {
     <div className="bg-sidebar">
       <Providers>
         <AppSidebar />
-        <main className="ml-2 w-full h-screen relative p-6 py-10 overflow-scroll">
+        <main className="ml-2 w-full h-screen relative p-6 py-10 overflow-y-scroll">
           <div className="fixed top-0 left-0 right-0 h-10 titlebar" />
           <Outlet />
         </main>

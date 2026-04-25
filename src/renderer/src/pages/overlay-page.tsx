@@ -18,7 +18,7 @@ function OverlaySummary({ image }: { image: string }) {
           const id = await window.api.startSummarizationFromImage(image)
           setId(id)
         }
-      } catch {}
+      } catch { }
     }
     effect()
   }, [image])
@@ -78,7 +78,7 @@ export function OverlayPage() {
       >
         <CircleXIcon />
       </Button>
-      <div className="overflow-scroll h-full p-3 mb-10">
+      <div className="overflow-y-scroll h-full p-3 mb-10">
         <OverlaySummary image={image} />
       </div>
     </div>
