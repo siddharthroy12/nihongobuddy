@@ -1,6 +1,6 @@
 {
-  "name": "japanesebuddy",
-  "version": "1.0.0",
+  "name": "nihongobuddy",
+  "version": "0.1.0",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "siddharthroy.com",
