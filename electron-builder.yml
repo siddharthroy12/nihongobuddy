@@ -34,7 +34,6 @@ linux:
     - AppImage
     - deb
     - rpm
-    - pacman
   maintainer: siddharthroy.com
   category: Utility
 appImage:
