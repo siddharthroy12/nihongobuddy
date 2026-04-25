@@ -1,41 +1,46 @@
-# japanesebuddy
+<a id="readme-top"></a>
 
-An Electron application with React and TypeScript
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/siddharthroy12/nihongobuddy">
+    <img src="icon.png" alt="Logo" width="80" height="80">
+  </a>
 
-## Recommended IDE Setup
+  <h3 align="center">Nihongo Buddy</h3>
+</div
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+![Screen Shot](screenshot.png)
+![Screen Shot](screenshot2.png)
 
-## Project Setup
+A tool for summarising Japanese text. It is made for people who prefer learning Japanese by reading. It captures screen to translate and summarise what's on screen.
 
-### Install
+### Features
 
-```bash
-$ npm install
-```
+- **Translation and Summarization**: Provide any text or image containing Japanese and it'll summarise it.
+- **Shortcut Key**: Just press an customisable shortcut key to capture screenshot and translate without the need to open the app.
+- **Dictionary(Coming Soon)**: The app will include a dictionary soon.
+- **Anki Integration(Coming Soon)**: For word mining the anki integration will come soon.
 
-### Development
+### Setup
 
-```bash
-$ npm run dev
-```
+- Get any LLM API key
+- Run the app
+- Open settings and setup LLM and shotcut key.
 
-### Build
+### Usage
 
-```bash
-# For windows
-$ npm run build:win
+Method 1: go the "Explain Text" section and paste any Japanese text or upload any image with Japanese text it in.
 
-# For macOS
-$ npm run build:mac
+Method 2: Open anything that has Japanese on it and use the shortcut key.
 
-# For Linux
-$ npm run build:linux
-```
+### Report issues
 
-TODO:
+Please report any issues on this page
+https://github.com/siddharthroy12/nihongobuddy/issues
 
-- Add proper readme 
-- Publish binaries
+## Roadmap
+
 - Add dictionary.
-- Add anki integration
+- Add how to use instructions in the app.
+- Add Anki integration.
