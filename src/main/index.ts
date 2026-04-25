@@ -10,7 +10,7 @@ let mainWindow: BrowserWindow | null = null
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    title: 'Japanese Buddy',
+    title: 'Nihongo Buddy',
     width: 900,
     height: 670,
     show: false,

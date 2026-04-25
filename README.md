@@ -35,7 +35,6 @@ $ npm run build:linux
 
 TODO:
 
-- Add app icon
 - Add proper readme 
 - Publish binaries
 - Add dictionary.
