@@ -35,10 +35,8 @@ $ npm run build:linux
 
 TODO:
 
-- Add zod validation for LLM response.
 - Add app icon
 - Add proper readme 
 - Publish binaries
-
 - Add dictionary.
 - Add anki integration
