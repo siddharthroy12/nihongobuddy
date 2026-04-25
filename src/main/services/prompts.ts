@@ -1,28 +1,33 @@
+import { z } from 'zod'
 import { runPromptWithImageJSONReponse, runPromptWithJSONReponse } from './llm'
 
-function createPromptForSplitSentence(text: string) {
-  return `
-YOU ARE A MACHINE THAT HAS ONLY ONE JOB AND THAT JOB IS TO EXTRACT JAPANESE SENTENCES AND WORDS FROM GIVEN TEXT AND RETURN
-IT AS AN ARRAY OF STRINGS. EACH ENTRY OF STRING SHOULD CONTAIN EITHER A SENTENCE OR A WORD
+const WordSchema = z.object({
+  word: z.string(),
+  type: z.string(),
+  furigana: z.string(),
+  meaning: z.string()
+})
 
-==== TEXT BEING ====
-${text}
-==== TEXT END ======
+const GrammarPointSchema = z.object({
+  point: z.string(),
+  explanation: z.string()
+})
 
-Example Output:
-[
-    "どの飲み物が好きですか？",
-    "甘いものがいいですか、それともしょっぱいものがいいですか？"
-]
+const SentenceSchema = z.object({
+  sentence: z.string(),
+  translation: z.string(),
+  words: z.array(WordSchema),
+  grammarpoints: z.array(GrammarPointSchema)
+})
 
-In your output only an array should be present.
-`
-}
+const SummarySchema = z.object({
+  sentences: z.array(SentenceSchema)
+})
 
-export async function splitSentences(text: string): Promise<string[]> {
-  const prompt = createPromptForSplitSentence(text)
-  return await runPromptWithJSONReponse(prompt)
-}
+export type Word = z.infer<typeof WordSchema>
+export type GrammarPoint = z.infer<typeof GrammarPointSchema>
+export type Sentence = z.infer<typeof SentenceSchema>
+export type Summary = z.infer<typeof SummarySchema>
 
 function createPromptForGeneratingSummary(text: string, forImage = false) {
   return `
@@ -83,12 +88,14 @@ Return ONLY the JSON object. No extra text, no markdown, no backticks.
 `
 }
 
-export async function generateSummary(text: string) {
+export async function generateSummary(text: string): Promise<Summary> {
   const prompt = createPromptForGeneratingSummary(text)
-  return await runPromptWithJSONReponse(prompt)
+  const raw = await runPromptWithJSONReponse(prompt)
+  return SummarySchema.parse(raw)
 }
 
-export async function generateSummaryFromImage(image: string) {
+export async function generateSummaryFromImage(image: string): Promise<Summary> {
   const prompt = createPromptForGeneratingSummary('', true)
-  return await runPromptWithImageJSONReponse(prompt, image)
+  const raw = await runPromptWithImageJSONReponse(prompt, image)
+  return SummarySchema.parse(raw)
 }

@@ -1,35 +1,49 @@
 import { Button } from '@renderer/components/ui/button'
 import { Spinner } from '@renderer/components/ui/spinner'
-import { CircleXIcon } from 'lucide-react'
+import { CircleXIcon, RotateCwIcon } from 'lucide-react'
 import { SummaryComp } from './summary-page'
 import { useEffect, useState } from 'react'
-import { Summary } from 'src/common/types'
+import { useGetSummaryById } from '@renderer/queries/summary'
 
 function OverlaySummary({ image }: { image: string }) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [summary, setSummary] = useState<Summary | undefined>()
+  const [id, setId] = useState('')
+  const { data: summary } = useGetSummaryById(id)
+
+  console.log(summary)
 
   useEffect(() => {
-    setIsLoading(true)
     async function effect() {
       try {
         if (image) {
           const id = await window.api.startSummarizationFromImage(image)
-          window.api.onSummaryUpdate(async () => {
-            setSummary(await window.api.getSummaryById(id))
-            setIsLoading(false)
-          })
+          setId(id)
         }
       } catch {}
     }
     effect()
   }, [image])
 
-  if (isLoading) {
+  if (summary?.processing) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center gap-2">
         <Spinner />
         Translating Text On Screen
+      </div>
+    )
+  }
+
+  if (summary?.error || summary?.sentences?.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+        Failed To Translate
+        <Button
+          onClick={() => {
+            window.api.retrySummarization(id)
+          }}
+        >
+          <RotateCwIcon />
+          Retry
+        </Button>
       </div>
     )
   }

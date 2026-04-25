@@ -37,10 +37,11 @@ function updateSummary(id: string, newProps: Partial<Summary>) {
       summary[key] = newProps[key]
     })
   }
+  notifyWindows()
 }
 
 export function getAllSummaries(): Summary[] {
-  return summaries.summaries
+  return summaries.summaries.toReversed()
 }
 
 export function getSummaryById(id: string): Summary | undefined {
@@ -115,7 +116,7 @@ export function startSummarizationFromImage(image): string {
 export async function retrySummarization(id: string) {
   const summary = getSummaryById(id)
   if (!summary || summary.processing) return
-
+  console.log('retrying')
   updateSummary(id, { processing: true, error: '', sentences: [] })
   try {
     let result: any
@@ -134,7 +135,6 @@ export async function retrySummarization(id: string) {
       processing: false,
       error: e + ''
     })
-    throw e
   }
 }
 

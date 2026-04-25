@@ -35,9 +35,7 @@ $ npm run build:linux
 
 TODO:
 
-- Fix overlay
 - Add zod validation for LLM response.
-- Show proper error in overlay mode.
 - Add app icon
 - Add proper readme 
 - Publish binaries

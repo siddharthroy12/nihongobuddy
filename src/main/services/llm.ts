@@ -30,6 +30,7 @@ export async function runPromptWithImage(
   imageBase64: string
 ): Promise<string | null> {
   const settingsData = getSettings()
+  console.log(settingsData)
   const client = new OpenAI({
     baseURL: settingsData?.['llm']?.['llmBaseUrl'] ?? '',
     apiKey: settingsData?.['llm']?.['llmApiKey'] ?? ''

@@ -10,7 +10,7 @@ export function useGetSummaryById(id: string) {
   const query = useQuery({
     queryKey: ['summary', id],
     queryFn: async () => {
-      return await window.api.getSummaryById(id)
+      return (await window.api.getSummaryById(id)) ?? null
     }
   })
   return query
